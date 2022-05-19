@@ -32,6 +32,14 @@
               </tr>
             </tbody>
           </table>
+          <div
+            class="exform_txt"
+            v-if="userInfo == null && this.logincount != 0"
+          >
+            <span style="color: red" class="mt-0"
+              >아이디와 비밀번호가 일치하지 않습니다.</span
+            >
+          </div>
         </div>
         <!-- join_form E  -->
         <div class="btn_wrap mt-3 mb-0">
@@ -45,7 +53,6 @@
           ><br />
         </div>
       </div>
-      member
       <!-- form_txtInput E -->
     </div>
     <!-- content E-->
@@ -63,10 +70,11 @@ export default {
         uid: null,
         upass: null,
       },
+      logincount: 0,
     };
   },
   computed: {
-    ...mapState("userStore", ["isLogin", "isLoginError"]),
+    ...mapState("userStore", ["isLogin", "isLoginError", "userInfo"]),
   },
   methods: {
     ...mapActions("userStore", ["userConfirm", "getUserInfo"]),
@@ -76,7 +84,10 @@ export default {
       if (this.isLogin) {
         await this.getUserInfo(token);
         this.$router.push("/");
+        this.logincount = 0;
       }
+      this.logincount++;
+      console.log(this.logincount);
     },
   },
 };

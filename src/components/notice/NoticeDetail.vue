@@ -43,23 +43,31 @@
       </div>
       <comment-write :nno="this.item.nno" />
     </b-card>
-    <template v-if="item.nwriter == 'ssafy'">
+    <template v-if="item.nwriter == userInfo.uid">
       <div class="text-right mb-5">
         <b-button class="btn btn-success" @click="modifyNotice(item.nno)">
           수정
         </b-button>
-        <b-button type="submit" variant="primary" @click="onList"
-          >목록</b-button
-        >
         <b-button class="btn btn-danger" @click="deleteNotice(item.nno)">
           삭제
         </b-button>
+        <b-button type="submit" variant="primary" @click="onList"
+          >목록</b-button
+        >
+      </div>
+    </template>
+    <template v-else>
+      <div class="text-right mb-5">
+        <b-button type="submit" variant="primary" @click="onList"
+          >목록</b-button
+        >
       </div>
     </template>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import http from "@/api/http";
 import CommentWrite from "@/components/comment/CommentWrite.vue";
 export default {
@@ -71,16 +79,15 @@ export default {
   },
   created() {
     let num = this.$route.params.nno;
-    console.log("번호");
-    console.log(num);
     http.get("/notice/ajax/read/" + num).then((response) => {
       this.item = response.data.board;
-      console.log(this.item);
     });
     http.get("/comment/" + num).then((response) => {
-      console.log(response.data);
       this.comments = response.data;
     });
+  },
+  computed: {
+    ...mapState("userStore", ["userInfo"]),
   },
   methods: {
     deleteNotice(nno) {

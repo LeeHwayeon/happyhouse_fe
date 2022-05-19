@@ -18,6 +18,7 @@
 
 <script>
 import http from "@/api/http.js";
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -32,7 +33,7 @@ export default {
       let comment = {
         nno: this.nno,
         ccontent: this.ccontent,
-        cwriter: "admin",
+        cwriter: this.userInfo.uid,
       };
       console.log("댓글 작성");
       console.log(this.nno);
@@ -44,6 +45,9 @@ export default {
         this.$router.push("/notice/list");
       });
     },
+  },
+  computed: {
+    ...mapState("userStore", ["userInfo"]),
   },
 };
 </script>

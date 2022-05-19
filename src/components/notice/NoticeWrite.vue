@@ -41,13 +41,16 @@
 
 <script>
 import http from "@/api/http.js";
+import { mapState } from "vuex";
 export default {
   data() {
     return {
-      nwriter: "ssafy",
       title: "",
       content: "",
     };
+  },
+  computed: {
+    ...mapState("userStore", ["userInfo"]),
   },
   methods: {
     // 입력값 체크하기 - 체크가 성공하면 onSubmit 호출
@@ -69,7 +72,7 @@ export default {
     onSubmit() {
       http
         .post("/notice/write", {
-          nwriter: this.nwriter,
+          nwriter: this.userInfo.uid,
           ntitle: this.title,
           ncontext: this.content,
         })
