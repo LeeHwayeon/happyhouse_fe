@@ -1,18 +1,16 @@
 <template>
   <header id="header" class="shadow">
     <b-container>
-      <b-navbar
-        toggleable="lg"
-        type="light"
-        variant="light"
-        class="navbar-dark"
-      >
-        <router-link to="/" class="logo">
+      <b-navbar toggleable="lg" variant="light" class="navbar-dark">
+        <b-navbar-brand to="/" class="logo">
           <span class="mt-5">HAPPY HOUSE</span>
           <img src="@/assets/eco-home.png" alt="logo img" />
-        </router-link>
+        </b-navbar-brand>
 
-        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <b-navbar-toggle
+          target="nav-collapse"
+          class="btn btn-success"
+        ></b-navbar-toggle>
 
         <b-collapse id="nav-collapse" is-nav class="justify-content-end">
           <b-navbar-nav>
@@ -21,7 +19,7 @@
               <router-link to="/notice?p=1">공지사항</router-link>
               <router-link to="/mypage">마이페이지</router-link>
               <a href="#" @click.prevent="onClickLogout"> 로그아웃 </a>
-              <p class="info_text align-self-center">
+              <p class="info_text">
                 <span>{{ userInfo.uname }}({{ userInfo.uid }})</span>님
                 환영합니다.
               </p>
@@ -42,6 +40,20 @@ import { mapState, mapMutations } from "vuex";
 // import ms from "@/store/modules/userStore";
 
 export default {
+  mounted() {
+    const toggle = document.getElementsByClassName("navbar-toggler");
+
+    //토글 버튼 위에 마우스 올렸을때 메뉴 나오게
+    toggle[0].addEventListener("mouseover", () => {
+      document.getElementById("nav-collapse").style.display = "block";
+    });
+
+    //메뉴 중 하나 클릭하면 메뉴 사라지게
+    const menu = document.getElementsByClassName("navbar-nav");
+    menu[0].addEventListener("click", () => {
+      document.getElementById("nav-collapse").style.display = "none";
+    });
+  },
   computed: {
     ...mapState("userStore", ["isLogin", "userInfo"]),
   },
@@ -87,30 +99,6 @@ header .logo img {
   margin-left: 5px;
 }
 
-header,
-header .navbar {
-  height: 100px;
-  margin: auto;
-  margin-bottom: 30px;
-  top: 0;
-  width: 100%;
-  line-height: middle;
-}
-
-header .navbar-dark .navbar-brand {
-  font-weight: 600;
-  color: #333;
-  font-size: 25px;
-}
-
-.navbar-toggler {
-  background-color: #0ca66ead;
-  border-color: #0ca66ead !important;
-}
-.navbar-toggler > .navbar-toggler-icon {
-  background-color: black;
-}
-
 .bg-light {
   background-color: #fff !important;
 }
@@ -120,19 +108,18 @@ header .navbar-dark .navbar-brand {
   transition: all 0.5s;
   z-index: 997;
   height: 100px;
+  margin-bottom: 30px;
 }
 
 #header .logo {
   font-size: 30px;
-  margin: 0;
-  padding: 0;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-#header .logo {
   color: #0ca66d;
   text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 1px;
+  height: 84px;
+  padding: 0;
+  line-height: 84px;
 }
 #header .logo:hover {
   color: #0b8b5c;
@@ -143,11 +130,44 @@ header .navbar-dark .navbar-brand {
 }
 
 .info_text {
-  margin-bottom: 0;
-  margin-left: 7px;
+  height: 100%;
+  margin: auto;
 }
 .info_text span {
   font-weight: bold;
   color: #0ca66d;
+}
+
+/* 토글 */
+.navbar-toggler {
+  background-color: #0ca66d;
+  border-color: #0ca66d !important;
+}
+.navbar-toggler > .navbar-toggler-icon {
+  background-color: black;
+}
+
+.navbar-collapse,
+.navbar-collapse ul .info_text {
+  z-index: 10;
+}
+
+.navbar-collapse ul a,
+.navbar-collapse ul .info_text {
+  padding: 5px;
+  text-align: right;
+}
+
+/* 반응형 */
+@media (min-width: 768px) and (max-width: 992px) {
+  .bg-light {
+    height: 100px;
+  }
+  .navbar-collapse {
+    background-color: rgba(255, 255, 255, 0.911);
+  }
+  .info_text {
+    margin: 10px 0;
+  }
 }
 </style>

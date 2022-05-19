@@ -24,7 +24,7 @@
                 <th><span>비밀번호</span></th>
                 <td>
                   <input
-                    type="text"
+                    type="password"
                     placeholder="비밀번호를 입력해주세요."
                     v-model="user.upass"
                   />
@@ -43,7 +43,7 @@
         </div>
         <!-- join_form E  -->
         <div class="btn_wrap mt-3 mb-0">
-          <b-button pill variant="primary" @click="login()">로그인</b-button>
+          <b-button pill variant="success" @click="login()">로그인</b-button>
         </div>
         <div class="exform_txt">
           <router-link to=""
