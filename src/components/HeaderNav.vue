@@ -16,12 +16,20 @@
 
         <b-collapse id="nav-collapse" is-nav class="justify-content-end">
           <b-navbar-nav>
-            <router-link to="/login">로그인</router-link>
-            <router-link to="/signup">회원가입</router-link>
-            <router-link to="/house">아파트 실거래가 조회</router-link>
-            <router-link to="/notice?p=1">공지사항</router-link>
-            <router-link to="/logout">로그아웃</router-link>
-            <router-link to="/mypage">마이페이지</router-link>
+            <template v-if="userInfo">
+              <router-link to="/house">아파트 실거래가 조회</router-link>
+              <router-link to="/notice?p=1">공지사항</router-link>
+              <router-link to="/mypage">마이페이지</router-link>
+              <a href="#" @click.prevent="onClickLogout"> 로그아웃 </a>
+              <p class="info_text align-self-center">
+                <span>{{ userInfo.uname }}({{ userInfo.uid }})</span>님
+                환영합니다.
+              </p>
+            </template>
+            <template v-else>
+              <router-link to="/login">로그인</router-link>
+              <router-link to="/signup">회원가입</router-link>
+            </template>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
@@ -30,7 +38,28 @@
 </template>
 
 <script>
-export default {};
+import { mapState, mapMutations } from "vuex";
+// import ms from "@/store/modules/userStore";
+
+export default {
+  computed: {
+    ...mapState("userStore", ["isLogin", "userInfo"]),
+  },
+  methods: {
+    ...mapMutations("userStore", ["SET_IS_LOGIN", "SET_USER_INFO"]),
+    onClickLogout() {
+      // console.log("memberStore : ", ms);
+      this.SET_IS_LOGIN(false);
+      this.SET_USER_INFO(null);
+      sessionStorage.removeItem("access-token");
+      this.$swal({
+        icon: "success",
+        title: "로그아웃 성공",
+      });
+      if (this.$route.path != "/") this.$router.push("/");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -111,5 +140,14 @@ header .navbar-dark .navbar-brand {
 
 .scrolled-offset {
   margin-top: 70px;
+}
+
+.info_text {
+  margin-bottom: 0;
+  margin-left: 7px;
+}
+.info_text span {
+  font-weight: bold;
+  color: #0ca66d;
 }
 </style>
