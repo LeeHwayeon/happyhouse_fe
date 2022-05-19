@@ -21,7 +21,7 @@
         </div>
       </b-media>
       <hr />
-      <div class="m-3">
+      <!-- <div class="m-3">
         <h6 class="mb-3">댓글</h6>
         <template v-if="this.comments.length > 0">
           <div v-for="(item, index) in this.comments" :key="index" class="mb-3">
@@ -40,9 +40,11 @@
             </b-row>
           </div>
         </template>
-      </div>
+      </div> -->
+      <comment-list />
       <comment-write :nno="this.item.nno" />
     </b-card>
+
     <template v-if="item.nwriter == userInfo.uid">
       <div class="text-right mb-5">
         <b-button class="btn btn-success" @click="modifyNotice(item.nno)">
@@ -70,10 +72,11 @@
 import { mapState } from "vuex";
 import http from "@/api/http";
 import CommentWrite from "@/components/comment/CommentWrite.vue";
+import CommentList from "@/components/comment/CommentList.vue";
 export default {
   data() {
     return {
-      comments: [],
+      // comments: [],
       item: [],
     };
   },
@@ -82,9 +85,9 @@ export default {
     http.get("/notice/ajax/read/" + num).then((response) => {
       this.item = response.data.board;
     });
-    http.get("/comment/" + num).then((response) => {
-      this.comments = response.data;
-    });
+    // http.get("/comment/" + num).then((response) => {
+    //   this.comments = response.data;
+    // });
   },
   computed: {
     ...mapState("userStore", ["userInfo"]),
@@ -105,6 +108,7 @@ export default {
   },
   components: {
     CommentWrite,
+    CommentList,
   },
 };
 </script>
