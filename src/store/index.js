@@ -1,15 +1,32 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
+import userStore from "@/store/modules/userStore";
+import http from "@/api/http.js";
 
 Vue.use(Vuex);
-import userStore from "@/store/modules/userStore";
 
 export default new Vuex.Store({
-  state: {},
+  state: {
+    gudong: [],
+    gu: [],
+    dong: [],
+  },
   getters: {},
-  mutations: {},
-  actions: {},
+  mutations: {
+    GET_GUGUN_DONG(state, payload) {
+      state.gudong = payload.gudong;
+      state.gu = payload.gugun;
+    },
+  },
+  actions: {
+    getGuGunDong({ commit }) {
+      http.get("/houseinfo/list").then(({ data }) => {
+        console.log(data);
+        commit("GET_GUGUN_DONG", data);
+      });
+    },
+  },
   modules: {
     userStore,
   },

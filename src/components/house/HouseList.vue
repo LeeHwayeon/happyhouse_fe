@@ -43,9 +43,6 @@ import http from "@/api/http.js";
 export default {
   data() {
     return {
-      gudong: [],
-      gu: [],
-      dong: [],
       selectedGu: "",
       selectedDong: "",
       aptName: "",
@@ -55,11 +52,7 @@ export default {
     };
   },
   created() {
-    http.get("/houseinfo/list").then((resp) => {
-      console.log(resp.data);
-      this.gudong = resp.data.gudong;
-      this.gu = resp.data.gugun;
-    });
+    this.$store.dispatch("getGuGunDong");
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -75,7 +68,17 @@ export default {
       document.head.appendChild(script);
     }
   },
-  computed: {},
+  computed: {
+    gudong() {
+      return this.$store.state.gudong;
+    },
+    dong() {
+      return this.$store.state.dong;
+    },
+    gu() {
+      return this.$store.state.gu;
+    },
+  },
   methods: {
     getDong() {
       console.log(this.selectedGu);
