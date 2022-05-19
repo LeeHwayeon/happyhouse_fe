@@ -5,6 +5,7 @@
       <b-col cols="12" md="auto" class="m-4"> <h2>My page</h2></b-col>
       <b-col col lg="2"></b-col>
     </b-row>
+
     <b-card tag="article" class="mb-4">
       <div class="user-img mt-3 mb-4">
         <img src="@/assets/comment_user.png" alt="user image" />
@@ -28,7 +29,6 @@
             type="password"
             v-model="userInfo.upass"
             required
-            disabled
           ></b-form-input>
         </b-form-group>
 
@@ -45,16 +45,28 @@
         <b-form-group id="input-group-4" label="주소" label-for="input-4">
           <b-row>
             <b-col>
-              <b-form-select v-model="userInfo.uadd" id="guName">
-                <option disabled :value="userInfo.uadd">
-                  {{ userInfo.uadd }}
+              <b-form-select v-model="selectedGu" id="guName" @change="getDong">
+                <option
+                  v-for="(item, index) in gu"
+                  :key="index"
+                  :value="item.gugunName"
+                >
+                  {{ item.gugunName }}
                 </option>
               </b-form-select>
             </b-col>
             <b-col>
-              <b-form-select id="dongName" v-model="userInfo.uadd">
-                <option disabled :value="userInfo.uadd">
-                  {{ userInfo.uadd }}
+              <b-form-select
+                id="dongName"
+                v-model="selectedDong"
+                :options="dong"
+              >
+                <option
+                  v-for="(item, index) in selectedDongs"
+                  :key="index"
+                  :value="item"
+                >
+                  {{ item }}
                 </option>
               </b-form-select>
             </b-col>
@@ -63,12 +75,8 @@
       </div>
     </b-card>
     <div class="text-right mb-5">
-      <b-button type="submit" variant="success" @click="moveModify"
-        >수정</b-button
-      >
-      <b-button type="reset" variant="danger" @click="userDelete"
-        >탈퇴</b-button
-      >
+      <b-button type="submit" variant="primary">수정</b-button>
+      <b-button type="reset" variant="danger">취소</b-button>
     </div>
   </div>
 </template>
@@ -94,13 +102,29 @@ export default {
   },
   computed: {
     ...mapState("userStore", ["isLogin", "userInfo"]),
+    gudong() {
+      return this.$store.state.gudong;
+    },
+    dong() {
+      return this.$store.state.dong;
+    },
+    gu() {
+      return this.$store.state.gu;
+    },
   },
   methods: {
     ...mapMutations("userStore", ["SET_IS_LOGIN", "SET_USER_INFO"]),
-    moveModify() {
-      this.$router.push("/modify");
+    getDong() {
+      console.log(this.selectedGu);
+      let results = [];
+      for (let i = 0; i < this.gudong.length; i++) {
+        if (this.gudong[i].gugunName == this.selectedGu) {
+          results.push(this.gudong[i].dongName);
+        }
+      }
+      this.selectedDongs = results;
+      console.log(this.selectedDongs);
     },
-    userDelete() {},
   },
 };
 </script>

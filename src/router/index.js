@@ -16,6 +16,8 @@ import NoticeDetail from "@/components/notice/NoticeDetail.vue";
 import HouseList from "@/components/house/HouseList.vue";
 import HouseDetail from "@/components/house/HouseDetail.vue";
 
+import UserModify from "@/components/user/UserModify.vue";
+
 Vue.use(VueRouter);
 const routes = [
   {
@@ -88,6 +90,11 @@ const routes = [
     path: "/mypage",
     name: "mypage",
     component: MyPageView,
+  },
+  {
+    path: "/modify",
+    name: "UserModify",
+    component: UserModify,
   },
 ];
 

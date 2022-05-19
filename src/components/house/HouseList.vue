@@ -14,7 +14,11 @@
       </b-col>
       <b-col cols="2">
         <b-form-select id="dongName" v-model="selectedDong" :options="dong">
-          <option v-for="(item, index) in dong" :key="index" :value="item">
+          <option
+            v-for="(item, index) in selectedDongs"
+            :key="index"
+            :value="item"
+          >
             {{ item }}
           </option>
         </b-form-select>
@@ -43,6 +47,7 @@ import http from "@/api/http.js";
 export default {
   data() {
     return {
+      selectedDongs: [],
       selectedGu: "",
       selectedDong: "",
       aptName: "",
@@ -88,8 +93,8 @@ export default {
           results.push(this.gudong[i].dongName);
         }
       }
-      this.dong = results;
-      console.log(this.dong);
+      this.selectedDongs = results;
+      console.log(this.selectedDongs);
     },
     search() {
       if (!this.selectedGu && !this.selectedDong && this.aptName.length == 0) {
