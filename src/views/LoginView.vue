@@ -16,7 +16,7 @@
                   <input
                     type="text"
                     placeholder="ID 를 입력하세요."
-                    v-model="id"
+                    v-model="user.uid"
                   />
                 </td>
               </tr>
@@ -26,7 +26,7 @@
                   <input
                     type="text"
                     placeholder="비밀번호를 입력해주세요."
-                    v-model="password"
+                    v-model="user.upass"
                   />
                 </td>
               </tr>
@@ -45,6 +45,7 @@
           ><br />
         </div>
       </div>
+      member
       <!-- form_txtInput E -->
     </div>
     <!-- content E-->
@@ -53,17 +54,29 @@
 </template>
 
 <script>
-import http from "@/api/http.js";
+import { mapState, mapActions } from "vuex";
+
 export default {
   data() {
     return {
-      id: "",
-      password: "",
+      user: {
+        uid: null,
+        upass: null,
+      },
     };
   },
+  computed: {
+    ...mapState("userStore", ["isLogin", "isLoginError"]),
+  },
   methods: {
-    login() {
-      http.get;
+    ...mapActions("userStore", ["userConfirm", "getUserInfo"]),
+    async login() {
+      await this.userConfirm(this.user);
+      let token = sessionStorage.getItem("access-token");
+      if (this.isLogin) {
+        await this.getUserInfo(token);
+        this.$router.push("/");
+      }
     },
   },
 };
