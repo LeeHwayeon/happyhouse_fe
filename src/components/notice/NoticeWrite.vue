@@ -21,6 +21,7 @@
           rows="8"
           required
           ref="content"
+          @keyup.13="checkValue"
         ></b-form-textarea>
       </b-form-group>
 

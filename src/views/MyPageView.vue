@@ -45,16 +45,16 @@
         <b-form-group id="input-group-4" label="주소" label-for="input-4">
           <b-row>
             <b-col>
-              <b-form-select v-model="userInfo.uadd" id="guName">
-                <option disabled :value="userInfo.uadd">
-                  {{ userInfo.uadd }}
+              <b-form-select v-model="gu" id="guName">
+                <option disabled :value="gu">
+                  {{ gu }}
                 </option>
               </b-form-select>
             </b-col>
             <b-col>
-              <b-form-select id="dongName" v-model="userInfo.uadd">
-                <option disabled :value="userInfo.uadd">
-                  {{ userInfo.uadd }}
+              <b-form-select id="dongName" v-model="dong">
+                <option disabled :value="dong">
+                  {{ dong }}
                 </option>
               </b-form-select>
             </b-col>
@@ -75,6 +75,7 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import http from "@/api/http";
 
 export default {
   data() {
@@ -94,13 +95,42 @@ export default {
   },
   computed: {
     ...mapState("userStore", ["isLogin", "userInfo"]),
+
+    gu() {
+      let str = this.userInfo.uadd.split(" ");
+      return str[0];
+    },
+    dong() {
+      let str = this.userInfo.uadd.split(" ");
+      return str[1];
+    },
   },
   methods: {
     ...mapMutations("userStore", ["SET_IS_LOGIN", "SET_USER_INFO"]),
     moveModify() {
-      this.$router.push("/modify");
+      this.$router.push("/check");
     },
-    userDelete() {},
+    userDelete() {
+      this.$swal({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          http.delete("/user/delete/" + this.userInfo.uid).then(() => {
+            this.SET_IS_LOGIN(false);
+            this.SET_USER_INFO(null);
+            sessionStorage.removeItem("access-token");
+            if (this.$route.path != "/") this.$router.push("/");
+            this.$swal("Deleted!", "Your file has been deleted.", "success");
+          });
+        }
+      });
+    },
   },
 };
 </script>

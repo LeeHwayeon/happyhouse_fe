@@ -6,6 +6,7 @@
         placeholder="답글"
         v-model="ccontent"
         rows="2"
+        @keyup.13="registComment"
       ></b-form-textarea>
     </b-col>
     <b-col cols="1"

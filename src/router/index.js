@@ -17,6 +17,7 @@ import HouseList from "@/components/house/HouseList.vue";
 import HouseDetail from "@/components/house/HouseDetail.vue";
 
 import UserModify from "@/components/user/UserModify.vue";
+import UserCheck from "@/components/user/UserCheck.vue";
 
 Vue.use(VueRouter);
 const routes = [
@@ -95,6 +96,11 @@ const routes = [
     path: "/modify",
     name: "UserModify",
     component: UserModify,
+  },
+  {
+    path: "/check",
+    name: "UserCheck",
+    component: UserCheck,
   },
 ];
 

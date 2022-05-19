@@ -37,6 +37,7 @@
 
 <script>
 import http from "@/api/http.js";
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -47,10 +48,15 @@ export default {
     let num = this.$route.params.nno;
     console.log("수정할 데이터 번호");
     console.log(num);
-    http.get("/notice/ajax/read/" + num).then((response) => {
-      this.item = response.data.board;
-      console.log(this.item);
-    });
+    http
+      .get("/notice/ajax/read/" + num + "/" + this.userInfo.uid)
+      .then((response) => {
+        this.item = response.data.board;
+        console.log(this.item);
+      });
+  },
+  computed: {
+    ...mapState("userStore", ["userInfo"]),
   },
   methods: {
     // 입력값 체크하기 - 체크가 성공하면 onSubmit 호출
@@ -70,7 +76,7 @@ export default {
       }
     },
     onSubmit(nno) {
-      http.post("/notice/ajax/update/" + nno, this.item).then(() => {
+      http.put("/notice/ajax/update/" + nno, this.item).then(() => {
         this.$swal({
           icon: "success",
           title: "게시글 수정성공",

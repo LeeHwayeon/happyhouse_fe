@@ -27,7 +27,7 @@
           <b-form-input
             id="input-2"
             type="password"
-            v-model="userInfo.upass"
+            v-model="user.upass"
             required
           ></b-form-input>
         </b-form-group>
@@ -75,14 +75,17 @@
       </div>
     </b-card>
     <div class="text-right mb-5 button">
-      <b-button type="submit" variant="primary">수정</b-button>
+      <b-button type="submit" variant="primary" @click="clickmodify"
+        >수정</b-button
+      >
       <b-button type="reset" variant="danger" class="ml-2">취소</b-button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapActions } from "vuex";
+import http from "@/api/http";
 
 export default {
   data() {
@@ -100,6 +103,9 @@ export default {
       selectedDong: "",
     };
   },
+  created() {
+    this.$store.dispatch("getGuGunDong");
+  },
   computed: {
     ...mapState("userStore", ["isLogin", "userInfo"]),
     gudong() {
@@ -113,7 +119,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("userStore", ["SET_IS_LOGIN", "SET_USER_INFO"]),
+    ...mapActions("userStore", ["userConfirm", "getUserInfo"]),
     getDong() {
       console.log(this.selectedGu);
       let results = [];
@@ -124,6 +130,36 @@ export default {
       }
       this.selectedDongs = results;
       console.log(this.selectedDongs);
+    },
+    clickmodify() {
+      if (this.user.upass === "") {
+        this.$swal({ icon: "error", title: "비밀번호를 입력하세요.." });
+      } else if (this.selectedGu === "" || this.selectedDong === "") {
+        this.$swal({ icon: "error", title: "주소를 선택하세요." });
+      } else {
+        let userDto = {
+          uid: this.userInfo.uid,
+          upass: this.user.upass,
+          uadd: this.selectedGu + " " + this.selectedDong,
+        };
+        http.put("/user/update", userDto).then(() => {
+          let user = {
+            uid: this.userInfo.uid,
+            upass: this.user.upass,
+          };
+          sessionStorage.removeItem("access-token");
+          this.login(user);
+          this.$swal({ icon: "success", title: "정보 수정 성공." });
+          this.$router.push("/mypage");
+        });
+      }
+    },
+    async login(user) {
+      await this.userConfirm(user);
+      let token = sessionStorage.getItem("access-token");
+      if (this.isLogin) {
+        await this.getUserInfo(token);
+      }
     },
   },
 };
