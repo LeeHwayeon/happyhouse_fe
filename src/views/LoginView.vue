@@ -84,6 +84,10 @@ export default {
       if (this.isLogin) {
         await this.getUserInfo(token);
         this.$router.push("/");
+        this.$swal({
+          icon: "success",
+          title: "로그인 성공",
+        });
         this.logincount = 0;
       }
       this.logincount++;
