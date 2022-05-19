@@ -110,7 +110,9 @@ export default {
 
     moveView(nno) {
       let p = this.$route.query.p != undefined ? this.$route.query.p : 1;
-      this.$router.push({ path: "/notice/detail/" + nno + "?p=" + p });
+      this.$router.push({
+        path: "/notice/detail/" + nno + "?p=" + p,
+      });
     },
     moveWrite() {
       this.$router.push("/notice/write");

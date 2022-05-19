@@ -21,26 +21,6 @@
         </div>
       </b-media>
       <hr />
-      <!-- <div class="m-3">
-        <h6 class="mb-3">댓글</h6>
-        <template v-if="this.comments.length > 0">
-          <div v-for="(item, index) in this.comments" :key="index" class="mb-3">
-            <b-row>
-              <b-col cols="1">
-                <img src="@/assets/comment_user.png" alt="user image" />
-              </b-col>
-              <b-col cols="11">
-                <div>
-                  {{ item.cwriter }}
-                </div>
-                <div>
-                  {{ item.ccontent }}
-                </div>
-              </b-col>
-            </b-row>
-          </div>
-        </template>
-      </div> -->
       <comment-list />
       <comment-write :nno="this.item.nno" />
     </b-card>
@@ -82,9 +62,11 @@ export default {
   },
   created() {
     let num = this.$route.params.nno;
-    http.get("/notice/ajax/read/" + num).then((response) => {
-      this.item = response.data.board;
-    });
+    http
+      .get("/notice/ajax/read/" + num + "/" + this.userInfo.uid)
+      .then((response) => {
+        this.item = response.data.board;
+      });
     // http.get("/comment/" + num).then((response) => {
     //   this.comments = response.data;
     // });

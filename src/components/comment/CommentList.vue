@@ -26,6 +26,7 @@
                     icon="x-circle-fill"
                     scale="1"
                     variant="dark"
+                    @click="commentdelete(item.cno)"
                   ></b-icon>
                 </b-button>
               </b-button-group>
@@ -38,12 +39,16 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import http from "@/api/http";
 export default {
   data() {
     return {
       comments: [],
     };
+  },
+  computed: {
+    ...mapState("userStore", ["userInfo"]),
   },
   created() {
     let nno = this.$route.params.nno;
@@ -54,7 +59,11 @@ export default {
   },
   methods: {
     commentmodify() {},
-    commentdelete() {},
+    commentdelete(cno) {
+      http.delete("/comment/" + cno).then(() => {
+        this.$router.go();
+      });
+    },
   },
 };
 </script>
