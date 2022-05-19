@@ -13,7 +13,25 @@
               {{ item.ndate }} <span>조회 : {{ item.ncount }}</span>
             </p>
           </b-col>
-          <b-col cols="2"> 댓글개수 출력할 것 </b-col>
+          <b-col cols="2">
+            <b-button
+              size="sm"
+              class="mb-2"
+              variant="outline-secondary"
+              @click="clickheart"
+            >
+              <b-icon
+                v-if="click == false"
+                icon="heart"
+                aria-hidden="true"
+              ></b-icon>
+              <b-icon
+                v-else-if="click == true"
+                icon="heart-fill"
+                aria-hidden="true"
+              ></b-icon>
+            </b-button>
+          </b-col>
         </b-row>
         <hr />
         <div class="notice-content">
@@ -57,6 +75,7 @@ export default {
   data() {
     return {
       // comments: [],
+      click: false,
       item: [],
     };
   },
@@ -67,9 +86,6 @@ export default {
       .then((response) => {
         this.item = response.data.board;
       });
-    // http.get("/comment/" + num).then((response) => {
-    //   this.comments = response.data;
-    // });
   },
   computed: {
     ...mapState("userStore", ["userInfo"]),
@@ -86,6 +102,9 @@ export default {
     },
     onList() {
       this.$router.push("/notice");
+    },
+    clickheart() {
+      this.click = !this.click;
     },
   },
   components: {

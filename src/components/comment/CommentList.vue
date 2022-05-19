@@ -7,7 +7,7 @@
           <b-col cols="1">
             <img src="@/assets/comment_user.png" alt="user image" />
           </b-col>
-          <b-col cols="10">
+          <b-col cols="9">
             <div>
               {{ item.cwriter }}
             </div>
@@ -15,22 +15,19 @@
               {{ item.ccontent }}
             </div>
           </b-col>
-          <b-col cols="1">
-            <b-button-toolbar>
-              <b-button-group class="mr-2">
-                <b-button>
-                  <b-icon icon="pencil" scale="1" variant="dark"></b-icon>
-                </b-button>
-                <b-button>
-                  <b-icon
-                    icon="x-circle-fill"
-                    scale="1"
-                    variant="dark"
-                    @click="commentdelete(item.cno)"
-                  ></b-icon>
-                </b-button>
-              </b-button-group>
-            </b-button-toolbar>
+          <b-col cols="2" v-if="item.cwriter == userInfo.uid">
+            <b-button-group>
+              <b-button size="sm" variant="outline-secondary">
+                <b-icon icon="pencil"></b-icon>
+              </b-button>
+              <b-button size="sm" variant="outline-secondary">
+                <b-icon
+                  icon="x-circle-fill"
+                  scale="0.5"
+                  @click="commentdelete(item.cno)"
+                ></b-icon>
+              </b-button>
+            </b-button-group>
           </b-col>
         </b-row>
       </div>
