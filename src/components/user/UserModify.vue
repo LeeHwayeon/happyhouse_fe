@@ -74,9 +74,9 @@
         </b-form-group>
       </div>
     </b-card>
-    <div class="text-right mb-5">
+    <div class="text-right mb-5 button">
       <b-button type="submit" variant="primary">수정</b-button>
-      <b-button type="reset" variant="danger">취소</b-button>
+      <b-button type="reset" variant="danger" class="ml-2">취소</b-button>
     </div>
   </div>
 </template>
@@ -136,5 +136,12 @@ export default {
 }
 .user-img img {
   width: 90px;
+}
+
+/* 카드 */
+.card,
+.button {
+  width: 70%;
+  margin: auto;
 }
 </style>

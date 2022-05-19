@@ -62,11 +62,11 @@
         </b-form-group>
       </div>
     </b-card>
-    <div class="text-right mb-5">
+    <div class="text-right mb-5 button">
       <b-button type="submit" variant="success" @click="moveModify"
         >수정</b-button
       >
-      <b-button type="reset" variant="danger" @click="userDelete"
+      <b-button type="reset" variant="danger" @click="userDelete" class="ml-2"
         >탈퇴</b-button
       >
     </div>
@@ -112,5 +112,11 @@ export default {
 }
 .user-img img {
   width: 90px;
+}
+
+.card,
+.button {
+  width: 70%;
+  margin: auto;
 }
 </style>
