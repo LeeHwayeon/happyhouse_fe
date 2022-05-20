@@ -27,19 +27,16 @@ export default new Vuex.Store({
   actions: {
     getSido({ commit }) {
       http.get("/code").then(({ data }) => {
-        console.log(data);
         commit("GET_SIDO", data);
       });
     },
     getGugun({ commit }, sidocode) {
       http.get("/code/gugun/" + sidocode).then(({ data }) => {
-        console.log(data);
         commit("GET_GUGUN", data);
       });
     },
     getDong({ commit }, guguncode) {
       http.get("/code/dong/" + guguncode).then(({ data }) => {
-        console.log(data);
         commit("GET_DONG", data);
       });
     },

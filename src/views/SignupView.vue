@@ -252,9 +252,7 @@ export default {
       this.$store.dispatch("getDong", this.selectedGu);
     },
     checkId() {
-      console.log(this.user.id.length);
       if (this.user.id.length < 6 || this.user.id.length > 15) {
-        console.log(this.user.id.length);
         document.getElementById("id_check").style.display = "block";
       } else if (6 <= this.user.id.length && this.user.id.length <= 15) {
         http.get("/user/idcheck/" + this.user.id).then((reps) => {
@@ -304,6 +302,7 @@ export default {
       }
     },
     signup() {
+      console.log("회원가입");
       let userDto = {
         uid: this.user.id,
         upass: this.user.password,
@@ -314,6 +313,7 @@ export default {
       };
 
       let addcode = this.selectedGu + this.selectedDong;
+      console.log(addcode);
       http.get("/code/addcode/" + addcode).then((resp) => {
         userDto.uadd =
           resp.data.sidoName +

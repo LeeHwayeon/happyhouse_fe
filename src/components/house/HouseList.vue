@@ -103,37 +103,28 @@ export default {
       this.$store.dispatch("getDong", this.selectedGu);
     },
     search() {
-      if (!this.selectedGu && !this.selectedDong && this.aptName.length == 0) {
-        alert("검색할 구와 동을 선택하세요!");
-      } else if (
-        this.selectedGu.length == 0 &&
-        this.selectedDong.length == 0 &&
-        !this.aptName
+      if (
+        this.selectedSido === "" &&
+        this.selectedGu === "" &&
+        !this.selectedDong === "" &&
+        this.aptName.length == 0
       ) {
-        alert("검색할 아파트 이름을 입력하세요!");
+        alert("검색할 구와 동을 선택하세요!");
       } else {
-        console.log("선택한 구 :" + this.selectedGu);
-        console.log("선택한 동 :" + this.selectedDong);
-        console.log("아파트 이름 :" + this.aptName);
+        console.log("선택한 시 :" + this.selectedSido);
+        // console.log("선택한 구 :" + this.selectedGu);
+        // console.log("선택한 동 :" + this.selectedDong);
+        // console.log("아파트 이름 :" + this.aptName);
 
-        http
-          .post("/housedeal/search", {
-            // gu: this.selectedGu,
-            dongName: this.selectedDong,
-            aptName: this.aptName,
-          })
-          .then((resp) => {
-            console.log(resp);
-            this.aptLists = resp.data.houseList; //검색 결과
-            if (this.aptLists.length == 0) {
-              this.$swal({
-                icon: "error",
-                title: "검색 결과가 없습니다!",
-              });
-            } else {
-              this.displayMarkers(); //마커 표시
-            }
-          });
+        http.get("/housedeal/sido/" + this.selectedSido).then((resp) => {
+          console.log(resp);
+          this.aptLists = resp.data; //검색 결과
+          if (this.aptLists.length == 0) {
+            this.$swal({ icon: "error", title: "검색 결과가 없습니다!" });
+          } else {
+            this.displayMarkers();
+          } //마커 표시
+        });
       }
     },
     // 카카오 지도 맵 생성
