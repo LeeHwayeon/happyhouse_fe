@@ -46,12 +46,12 @@ export default {};
   position: relative;
   padding: 0;
   margin: 0 0 35px 0;
-  color: #5cb874;
+  color: #0ca66d;
 }
 #footer h3::after {
   content: "";
   display: block;
-  background-color: #5cb874;
+  background-color: #0ca66d;
   width: 200px;
   height: 3px;
   margin: auto;

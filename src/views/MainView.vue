@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <slider-view />
-    <b-row>
+    <b-row class="mb-5">
       <b-col>
         <naver-news-view />
       </b-col>

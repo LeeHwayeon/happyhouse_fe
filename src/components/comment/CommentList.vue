@@ -1,6 +1,6 @@
 <template>
   <div class="m-3">
-    <h6 class="mb-3">댓글</h6>
+    <h6 class="mb-3">댓글 {{ this.comments.length }}</h6>
     <template v-if="this.comments.length > 0">
       <div v-for="(item, index) in this.comments" :key="index" class="mb-3">
         <b-row>
@@ -17,10 +17,10 @@
           </b-col>
           <b-col cols="2" v-if="item.cwriter == userInfo.uid">
             <b-button-group>
-              <b-button size="sm" variant="outline-secondary">
+              <b-button size="sm" variant="outline-primary">
                 <b-icon icon="pencil"></b-icon>
               </b-button>
-              <b-button size="sm" variant="outline-secondary">
+              <b-button size="sm" variant="outline-danger">
                 <b-icon
                   icon="x-circle-fill"
                   scale="0.5"

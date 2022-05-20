@@ -7,17 +7,17 @@
           <b-col cols="1">
             <img src="@/assets/user.png" alt="user image" />
           </b-col>
-          <b-col cols="9" class="profile">
+          <b-col cols="10" class="profile">
             <p>{{ item.nwriter }}</p>
             <p>
               {{ item.ndate }} <span>조회 : {{ item.ncount }}</span>
             </p>
           </b-col>
-          <b-col cols="2">
+          <b-col cols="1" class="heart">
             <b-button
               size="sm"
               class="mb-2"
-              variant="outline-secondary"
+              variant="outline-danger"
               @click="clickheart"
             >
               <b-icon
@@ -121,6 +121,9 @@ img {
 .profile {
   margin: 0;
 }
+.profile p {
+  margin-bottom: 0;
+}
 .profile span::before {
   content: "";
   display: inline-block;
@@ -130,7 +133,9 @@ img {
   margin-right: 10px;
   margin-left: 10px;
 }
-
+.heart {
+  padding: 0;
+}
 .notice-content {
   height: 350px;
 }

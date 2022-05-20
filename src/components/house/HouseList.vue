@@ -49,12 +49,40 @@
         >
       </b-col>
     </b-row>
-    <div id="map" class="mb-5"></div>
+    <div class="search_content">
+      <div id="map" class="mb-5"></div>
+      <div class="search_list">
+        <b-card
+          v-for="(apt, index) in this.aptLists"
+          :key="index"
+          class="m-2 shadow"
+        >
+          <b-row>
+            <b-col class="img_box" cols="5">
+              <img
+                :src="require(`@/assets/aptimg/apt${src[index]}.jpg`)"
+                :alt="src[index]"
+              />
+            </b-col>
+            <b-col cols="7">
+              <b-card-title>{{ apt.dealAmount }}</b-card-title>
+              <b-card-text>
+                {{ apt.apartmentName }}
+              </b-card-text>
+              <b-card-text class="small text-muted"
+                >{{ apt.area }}m² | {{ apt.floor }}층</b-card-text
+              >
+            </b-col>
+          </b-row>
+        </b-card>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import http from "@/api/http.js";
+
 export default {
   data() {
     return {
@@ -65,10 +93,19 @@ export default {
       map: null,
       markers: [],
       aptLists: [],
+      src: [],
     };
   },
   created() {
     this.$store.dispatch("getSido");
+
+    //랜덤 숫자 만들어서 이미지 출력하게
+    for (let i = 0; i < 10; i++) {
+      let randomNumber = Math.floor(Math.random() * 9) + 1;
+      this.src.push(randomNumber);
+    }
+
+    console.log(this.src);
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -106,10 +143,13 @@ export default {
       if (
         this.selectedSido === "" &&
         this.selectedGu === "" &&
-        !this.selectedDong === "" &&
+        this.selectedDong === "" &&
         this.aptName.length == 0
       ) {
-        alert("검색할 구와 동을 선택하세요!");
+        this.$swal({
+          icon: "error",
+          title: "검색할 구 또는 아파트 이름을 입력하세요!",
+        });
       } else {
         console.log("선택한 시 :" + this.selectedSido);
         // console.log("선택한 구 :" + this.selectedGu);
@@ -122,10 +162,23 @@ export default {
           if (this.aptLists.length == 0) {
             this.$swal({ icon: "error", title: "검색 결과가 없습니다!" });
           } else {
-            this.displayMarkers();
-          } //마커 표시
+            this.displayMarkers(); //마커 표시
+            document.getElementsByClassName("search_list")[0].style.display =
+              "block"; //리스트 목록 보이게
+            // this.changeImg();
+          }
         });
       }
+    },
+    changeImg() {
+      let randomNumber = Math.floor(Math.random() * 9) + 1;
+      const imgArr = [...document.querySelectorAll(".img_box img")];
+      console.log(imgArr);
+
+      imgArr.forEach((item) => {
+        console.log("item", item);
+        item.setAttribute("src", "@/assets/aptimg/apt" + randomNumber + ".jpg");
+      });
     },
     // 카카오 지도 맵 생성
     initMap() {
@@ -141,11 +194,11 @@ export default {
 
       // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
       // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
-      this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+      this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPLEFT);
 
       // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
       const zoomControl = new kakao.maps.ZoomControl();
-      this.map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+      this.map.addControl(zoomControl, kakao.maps.ControlPosition.LEFT);
     },
     displayMarkers() {
       //현재 표시되어 있는 마커들이 있다면 마커에 등록된 map을 없애줌
@@ -176,7 +229,7 @@ export default {
 
         var customOverlay = new kakao.maps.CustomOverlay({
           position: new kakao.maps.LatLng(item.lat, item.lng),
-          content: `<div class="window" style="background-color: rgb(250, 150, 84); padding:10px;font-weight: 500;color: #fff;border-radius: 20px;">${item.dealAmount.trim()}</div>`,
+          content: `<div class="window" style="background: #fb752d;border-radius: 10px;font-weight: 500;color: #fff;padding:10px;">${item.dealAmount.trim()}</div>`,
           xAnchor: 0.5,
           yAnchor: 2.1,
         });
@@ -190,6 +243,12 @@ export default {
 
       const position = this.aptLists[0];
       this.map.setCenter(new kakao.maps.LatLng(position.lat, position.lng));
+    },
+  },
+  filters: {
+    setDealAmount: function (value) {
+      value.replace(/,/g, ""); //콤마제거후
+      // if(value.)
     },
   },
 };
@@ -218,5 +277,59 @@ export default {
   font-weight: bold;
   color: #fff;
   border-radius: 20px;
+}
+
+.window {
+  position: relative;
+  background: #f58b51;
+  border-radius: 50px;
+}
+
+.window:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: 17px solid transparent;
+  border-top-color: #f58b51;
+  border-bottom: 0;
+  margin-left: -17px;
+  margin-bottom: -17px;
+}
+
+/* search List */
+.search_content {
+  position: relative;
+}
+.search_list {
+  display: none;
+  overflow: auto;
+  width: 350px;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.849);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 10;
+}
+.search_list .card-body {
+  padding: 15px;
+}
+
+.search_list .card-body .card-title {
+  margin: 10px 10px 6px 0;
+}
+.search_list .card-body p {
+  margin-bottom: 5px;
+}
+.search_list .card-body .img_box {
+  width: 100%;
+  height: 100px;
+}
+.search_list .card-body .img_box img {
+  width: 100%;
+  height: -webkit-fill-available;
 }
 </style>

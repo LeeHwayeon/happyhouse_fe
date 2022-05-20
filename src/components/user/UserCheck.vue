@@ -1,5 +1,5 @@
 <template>
-  <div class="bv-example-row">
+  <div class="bv-example-row p-4">
     <b-row class="justify-content-md-center mb-3">
       <b-col col lg="2"></b-col>
       <b-col cols="12" md="auto" class="m-4"> <h2>비밀번호 확인</h2></b-col>
@@ -8,14 +8,16 @@
 
     <b-row class="justify-content-md-center mb-3">
       <b-col col lg="2"></b-col>
-      <b-col cols="12" md="auto" class="mt-3">
-        <h5>개인 정보 조회를 위해서는 인증이 필요합니다.</h5>
-        <h5>비밀번호 입력 후 확인 버튼을 클릭해 주세요.</h5></b-col
+      <b-col cols="12" md="auto" class="m-4">
+        <h5>
+          개인 정보 조회를 위해서는 인증이 필요합니다. <br />
+          비밀번호 입력 후 확인 버튼을 클릭해 주세요.
+        </h5></b-col
       >
       <b-col col lg="2"></b-col>
     </b-row>
 
-    <b-card tag="article" class="mb-4">
+    <b-card class="mb-4">
       <!-- <h5>개인 정보 조회를 위해서는 인증이 필요합니다.</h5>
       <h5>비밀번호 입력 후 확인 버튼을 클릭해 주세요.</h5> -->
       <div class="mypage-content">
@@ -71,7 +73,7 @@ export default {
 
 .card,
 .button {
-  width: 70%;
+  width: 50%;
   margin: auto;
 }
 </style>
