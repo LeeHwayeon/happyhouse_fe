@@ -47,7 +47,7 @@
           <b-button pill variant="success" @click="login()">로그인</b-button>
         </div>
         <div class="exform_txt">
-          <router-link to=""
+          <router-link to="/search"
             ><span style="color: gray" class="mt-0"
               >Forgot your password?</span
             ></router-link

@@ -18,6 +18,7 @@ import HouseDetail from "@/components/house/HouseDetail.vue";
 
 import UserModify from "@/components/user/UserModify.vue";
 import UserCheck from "@/components/user/UserCheck.vue";
+import UserSearch from "@/components/user/UserSearch.vue";
 
 Vue.use(VueRouter);
 const routes = [
@@ -35,6 +36,11 @@ const routes = [
     path: "/signup",
     name: "signup",
     component: SignupView,
+  },
+  {
+    path: "/search",
+    name: "search",
+    component: UserSearch,
   },
   {
     path: "/notice",

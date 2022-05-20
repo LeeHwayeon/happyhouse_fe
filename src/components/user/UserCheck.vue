@@ -62,7 +62,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .user-img {
   margin: auto;
   text-align: center;
