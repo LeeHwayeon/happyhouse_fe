@@ -13,18 +13,27 @@
               <tr>
                 <th><span>아이디</span></th>
                 <td>
-                  <input
-                    type="text"
-                    placeholder="ID 를 입력하세요."
-                    v-model="id"
-                  />
+                  <b-form-group>
+                    <input
+                      type="text"
+                      placeholder="ID 를 입력하세요."
+                      v-model="user.id"
+                      @keyup="checkId"
+                    />
+                    <span id="id_check" class="exform_txt"
+                      >아이디는 6자이상 15자이하로 작성해주세요</span
+                    >
+                  </b-form-group>
                 </td>
               </tr>
               <tr>
                 <th><span>이름</span></th>
-                <td><input type="text" placeholder="" v-model="name" /></td>
                 <td>
-                  <span>아이디는 6자이상 15자이하로 작성해주세요</span>
+                  <input
+                    type="text"
+                    placeholder="이름을 입력하세요."
+                    v-model="user.name"
+                  />
                 </td>
               </tr>
               <tr>
@@ -33,7 +42,7 @@
                   <input
                     type="text"
                     placeholder="비밀번호를 입력해주세요."
-                    v-model="password"
+                    v-model="user.password"
                   />
                 </td>
               </tr>
@@ -43,36 +52,107 @@
                   <input
                     type="text"
                     placeholder="비밀번호를 확인하세요"
-                    @keyup="checkpassword"
-                    v-model="repassword"
+                    @keyup="checkPassword"
+                    v-model="user.repassword"
                   />
                 </td>
               </tr>
               <tr>
                 <th><span>생년월일</span></th>
                 <td>
-                  <input type="text" placeholder="0000.00.00" v-model="birth" />
+                  <b-row>
+                    <b-col>
+                      <input
+                        type="text"
+                        id="yy"
+                        v-model="yy"
+                        class="int"
+                        maxlength="4"
+                        placeholder="년(4자)"
+                      />
+                    </b-col>
+                    <b-col>
+                      <b-form-select id="mm" v-model="mm">
+                        <option>월</option>
+                        <option value="01">1</option>
+                        <option value="02">2</option>
+                        <option value="03">3</option>
+                        <option value="04">4</option>
+                        <option value="05">5</option>
+                        <option value="06">6</option>
+                        <option value="07">7</option>
+                        <option value="08">8</option>
+                        <option value="09">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                      </b-form-select>
+                    </b-col>
+                    <b-col>
+                      <input
+                        type="text"
+                        id="dd"
+                        v-model="dd"
+                        class="int"
+                        maxlength="2"
+                        placeholder="일"
+                      />
+                    </b-col>
+                  </b-row>
                 </td>
               </tr>
               <tr>
                 <th><span>성별</span></th>
                 <td>
-                  <input
-                    type="text"
-                    placeholder="남자 혹은 여자"
-                    v-model="gender"
-                  />
+                  <b-form-select v-model="user.gender" id="gender">
+                    <option
+                      v-for="(item, index) in genders"
+                      :key="index"
+                      :value="item.value"
+                    >
+                      {{ item.text }}
+                    </option>
+                  </b-form-select>
                 </td>
               </tr>
 
               <tr>
                 <th><span>주소</span></th>
                 <td>
-                  <input
-                    type="text"
-                    placeholder="현재 거주 주소를 입력해주세요."
-                    v-model="address"
-                  />
+                  <b-form-group id="input-group-4" label-for="input-4">
+                    <b-row>
+                      <b-col>
+                        <b-form-select
+                          v-model="selectedGu"
+                          id="guName"
+                          @change="getDong"
+                        >
+                          <option
+                            v-for="(item, index) in gu"
+                            :key="index"
+                            :value="item.gugunName"
+                          >
+                            {{ item.gugunName }}
+                          </option>
+                        </b-form-select>
+                      </b-col>
+                      <b-col>
+                        <b-form-select
+                          id="dongName"
+                          v-model="selectedDong"
+                          :options="dong"
+                        >
+                          <option
+                            v-for="(item, index) in selectedDongs"
+                            :key="index"
+                            :value="item"
+                          >
+                            {{ item }}
+                          </option>
+                        </b-form-select>
+                      </b-col>
+                    </b-row>
+                  </b-form-group>
                 </td>
               </tr>
             </tbody>
@@ -98,16 +178,78 @@
 export default {
   data() {
     return {
-      id: "",
-      password: "",
-      repassword: "",
-      name: "",
-      address: "",
-      gender: "",
+      user: {
+        id: "",
+        password: "",
+        repassword: "",
+        name: "",
+        birth: "",
+        address: "",
+        gender: "",
+      },
+      yy: "",
+      mm: "",
+      dd: "",
+      genders: [
+        {
+          value: "men",
+          text: "남자",
+        },
+        {
+          value: "women",
+          text: "여자",
+        },
+      ],
+      selectedDongs: [],
+      selectedGu: "",
+      selectedDong: "",
     };
   },
+  created() {
+    this.$store.dispatch("getGuGunDong");
+  },
+  computed: {
+    gudong() {
+      return this.$store.state.gudong;
+    },
+    dong() {
+      return this.$store.state.dong;
+    },
+    gu() {
+      return this.$store.state.gu;
+    },
+  },
+  // watch: {
+  //   user.id : function(){
+  //           if (this.user.id.length < 6 && this.user.id.length > 15) {
+  //       console.log(this.user.id.length);
+  //       document.getElementById("id_check").style.display = "block";
+  //     }
+  //   },
+  // },
   methods: {
-    checkpassword() {},
+    checkId() {
+      console.log(this.user.id.length);
+      if (this.user.id.length < 6 || this.user.id.length > 15) {
+        console.log(this.user.id.length);
+        document.getElementById("id_check").style.display = "block";
+      } else if (6 <= this.user.id.length && this.user.id.length <= 15) {
+        console.log("아이디 체크");
+        document.getElementById("id_check").style.display = "none";
+      }
+    },
+    checkPassword() {},
+    getDong() {
+      console.log(this.selectedGu);
+      let results = [];
+      for (let i = 0; i < this.gudong.length; i++) {
+        if (this.gudong[i].gugunName == this.selectedGu) {
+          results.push(this.gudong[i].dongName);
+        }
+      }
+      this.selectedDongs = results;
+      console.log(this.selectedDongs);
+    },
   },
 };
 </script>
@@ -622,5 +764,9 @@ ul {
   .join_form table input.send_number + a {
     margin: 0 0 0 5px;
   }
+}
+
+#id_check {
+  display: none;
 }
 </style>
