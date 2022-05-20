@@ -23,6 +23,15 @@
                     <span id="id_check" class="exform_txt"
                       >아이디는 6자이상 15자이하로 작성해주세요</span
                     >
+                    <span id="id_check_success" class="exform_txt"
+                      >사용 가능한 아이디 입니다.</span
+                    >
+                    <span
+                      id="id_check_fail"
+                      class="exform_txt"
+                      style="color: red"
+                      >사용 불가능한 아이디 입니다.</span
+                    >
                   </b-form-group>
                 </td>
               </tr>
@@ -40,8 +49,9 @@
                 <th><span>비밀번호</span></th>
                 <td>
                   <input
-                    type="text"
+                    type="password"
                     placeholder="비밀번호를 입력해주세요."
+                    @keyup="checkPassword"
                     v-model="user.password"
                   />
                 </td>
@@ -50,11 +60,14 @@
                 <th><span>비밀번호 확인</span></th>
                 <td>
                   <input
-                    type="text"
+                    type="password"
                     placeholder="비밀번호를 확인하세요"
                     @keyup="checkPassword"
                     v-model="user.repassword"
                   />
+                  <span id="pass_check" class="exform_txt" style="color: red"
+                    >비밀번호가 일치하지 않습니다.</span
+                  >
                 </td>
               </tr>
               <tr>
@@ -164,7 +177,7 @@
         <!-- join_form E  -->
 
         <div class="btn_wrap">
-          <b-button pill variant="primary">회원가입</b-button>
+          <b-button pill variant="primary" @click="check">회원가입</b-button>
         </div>
       </div>
       <!-- form_txtInput E -->
@@ -175,6 +188,7 @@
 </template>
 
 <script>
+import http from "@/api/http";
 export default {
   data() {
     return {
@@ -219,14 +233,7 @@ export default {
       return this.$store.state.gu;
     },
   },
-  // watch: {
-  //   user.id : function(){
-  //           if (this.user.id.length < 6 && this.user.id.length > 15) {
-  //       console.log(this.user.id.length);
-  //       document.getElementById("id_check").style.display = "block";
-  //     }
-  //   },
-  // },
+
   methods: {
     checkId() {
       console.log(this.user.id.length);
@@ -234,11 +241,25 @@ export default {
         console.log(this.user.id.length);
         document.getElementById("id_check").style.display = "block";
       } else if (6 <= this.user.id.length && this.user.id.length <= 15) {
-        console.log("아이디 체크");
-        document.getElementById("id_check").style.display = "none";
+        http.get("/user/idcheck/" + this.user.id).then((reps) => {
+          document.getElementById("id_check").style.display = "none";
+          if (reps.data === "SUCCESS") {
+            document.getElementById("id_check_success").style.display = "block";
+            document.getElementById("id_check_fail").style.display = "none";
+          } else {
+            document.getElementById("id_check_success").style.display = "none";
+            document.getElementById("id_check_fail").style.display = "block";
+          }
+        });
       }
     },
-    checkPassword() {},
+    checkPassword() {
+      if (this.user.password != this.user.repassword) {
+        document.getElementById("pass_check").style.display = "block";
+      } else {
+        document.getElementById("pass_check").style.display = "none";
+      }
+    },
     getDong() {
       console.log(this.selectedGu);
       let results = [];
@@ -249,6 +270,73 @@ export default {
       }
       this.selectedDongs = results;
       console.log(this.selectedDongs);
+    },
+    check() {
+      if (this.user.id === "") {
+        this.$swal({ icon: "error", title: "아이디를 입력하세요." });
+      } else if (this.user.name === "") {
+        this.$swal({ icon: "error", title: "이름을 입력하세요." });
+      } else if (this.user.password === "") {
+        this.$swal({ icon: "error", title: "비밀번호를 입력하세요." });
+      } else if (this.user.repassword === "") {
+        this.$swal({ icon: "error", title: "비밀번호를 확인해주세요." });
+      } else if (this.yy === "") {
+        this.$swal({ icon: "error", title: "생년월일을 입력하세요." });
+      } else if (this.mm === "") {
+        this.$swal({ icon: "error", title: "생년월일을 입력하세요." });
+      } else if (this.dd === "") {
+        this.$swal({ icon: "error", title: "생년월일을 입력하세요." });
+      } else if (this.user.gender === "") {
+        this.$swal({ icon: "error", title: "성별 입력하세요." });
+      } else if (this.selectedGu === "") {
+        this.$swal({ icon: "error", title: "주소를 입력하세요." });
+      } else if (this.selectedDong === "") {
+        this.$swal({ icon: "error", title: "주소를 입력하세요." });
+      } else {
+        this.signup();
+      }
+    },
+    signup() {
+      let userDto = {
+        uid: this.user.id,
+        upass: this.user.password,
+        uname: this.user.name,
+        uadd: this.selectedGu + " " + this.selectedDong,
+        ugender: this.user.gender,
+        ubirth: this.yy + "." + this.mm + "." + this.dd,
+      };
+
+      if (this.user.id.length < 6 || this.user.id.length > 15) {
+        this.$swal({
+          icon: "error",
+          title: "아이디를 다시 확인해주세요.",
+        });
+      } else if (6 <= this.user.id.length && this.user.id.length <= 15) {
+        http.get("/user/idcheck/" + this.user.id).then((reps) => {
+          document.getElementById("id_check").style.display = "none";
+          if (reps.data === "SUCCESS") {
+            if (this.user.password != this.user.repassword) {
+              this.$swal({
+                icon: "error",
+                title: "비밀번호를 다시 확인해주세요.",
+              });
+            } else {
+              http.post("/user/sign", userDto).then(() => {
+                this.$swal({
+                  icon: "success",
+                  title: "회원가입 성공.",
+                });
+                this.$router.push("/login");
+              });
+            }
+          } else {
+            this.$swal({
+              icon: "error",
+              title: "아이디를 다시 확인해주세요.",
+            });
+          }
+        });
+      }
     },
   },
 };
@@ -766,7 +854,10 @@ ul {
   }
 }
 
-#id_check {
+#id_check,
+#id_check_success,
+#id_check_fail,
+#pass_check {
   display: none;
 }
 </style>

@@ -27,6 +27,7 @@
                     type="password"
                     placeholder="비밀번호를 입력해주세요."
                     v-model="user.upass"
+                    @keyup.13="login"
                   />
                 </td>
               </tr>
