@@ -21,7 +21,7 @@ export default new Vuex.Store({
   },
   actions: {
     getGuGunDong({ commit }) {
-      http.get("/houseinfo/list").then(({ data }) => {
+      http.get("/code").then(({ data }) => {
         console.log(data);
         commit("GET_GUGUN_DONG", data);
       });
