@@ -109,6 +109,7 @@ export default {
         console.log("선택한 구 :" + this.selectedGu);
         console.log("선택한 동 :" + this.selectedDong);
         console.log("아파트 이름 :" + this.aptName);
+
         http
           .post("/housedeal/search", {
             // gu: this.selectedGu,
