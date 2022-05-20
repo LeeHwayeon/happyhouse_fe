@@ -86,19 +86,18 @@
                     </b-col>
                     <b-col>
                       <b-form-select id="mm" v-model="mm">
-                        <option>월</option>
-                        <option value="01">1</option>
-                        <option value="02">2</option>
-                        <option value="03">3</option>
-                        <option value="04">4</option>
-                        <option value="05">5</option>
-                        <option value="06">6</option>
-                        <option value="07">7</option>
-                        <option value="08">8</option>
-                        <option value="09">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
+                        <option value="01">1월</option>
+                        <option value="02">2월</option>
+                        <option value="03">3월</option>
+                        <option value="04">4월</option>
+                        <option value="05">5월</option>
+                        <option value="06">6월</option>
+                        <option value="07">7월</option>
+                        <option value="08">8월</option>
+                        <option value="09">9월</option>
+                        <option value="10">10월</option>
+                        <option value="11">11월</option>
+                        <option value="12">12월</option>
                       </b-form-select>
                     </b-col>
                     <b-col>
@@ -136,6 +135,21 @@
                     <b-row>
                       <b-col>
                         <b-form-select
+                          v-model="selectedSido"
+                          id="guName"
+                          @change="getSido"
+                        >
+                          <option
+                            v-for="(item, index) in sido"
+                            :key="index"
+                            :value="item.sidoCode"
+                          >
+                            {{ item.sidoName }}
+                          </option>
+                        </b-form-select>
+                      </b-col>
+                      <b-col>
+                        <b-form-select
                           v-model="selectedGu"
                           id="guName"
                           @change="getDong"
@@ -143,24 +157,20 @@
                           <option
                             v-for="(item, index) in gu"
                             :key="index"
-                            :value="item.gugunName"
+                            :value="item.gugunCode"
                           >
                             {{ item.gugunName }}
                           </option>
                         </b-form-select>
                       </b-col>
                       <b-col>
-                        <b-form-select
-                          id="dongName"
-                          v-model="selectedDong"
-                          :options="dong"
-                        >
+                        <b-form-select id="dongName" v-model="selectedDong">
                           <option
-                            v-for="(item, index) in selectedDongs"
+                            v-for="(item, index) in dong"
                             :key="index"
-                            :value="item"
+                            :value="item.dongCode"
                           >
-                            {{ item }}
+                            {{ item.dongName }}
                           </option>
                         </b-form-select>
                       </b-col>
@@ -214,17 +224,17 @@ export default {
           text: "여자",
         },
       ],
-      selectedDongs: [],
+      selectedSido: "",
       selectedGu: "",
       selectedDong: "",
     };
   },
   created() {
-    this.$store.dispatch("getGuGunDong");
+    this.$store.dispatch("getSido");
   },
   computed: {
-    gudong() {
-      return this.$store.state.gudong;
+    sido() {
+      return this.$store.state.sido;
     },
     dong() {
       return this.$store.state.dong;
@@ -235,6 +245,12 @@ export default {
   },
 
   methods: {
+    getSido() {
+      this.$store.dispatch("getGugun", this.selectedSido);
+    },
+    getDong() {
+      this.$store.dispatch("getDong", this.selectedGu);
+    },
     checkId() {
       console.log(this.user.id.length);
       if (this.user.id.length < 6 || this.user.id.length > 15) {
@@ -260,17 +276,6 @@ export default {
         document.getElementById("pass_check").style.display = "none";
       }
     },
-    getDong() {
-      console.log(this.selectedGu);
-      let results = [];
-      for (let i = 0; i < this.gudong.length; i++) {
-        if (this.gudong[i].gugunName == this.selectedGu) {
-          results.push(this.gudong[i].dongName);
-        }
-      }
-      this.selectedDongs = results;
-      console.log(this.selectedDongs);
-    },
     check() {
       if (this.user.id === "") {
         this.$swal({ icon: "error", title: "아이디를 입력하세요." });
@@ -288,6 +293,8 @@ export default {
         this.$swal({ icon: "error", title: "생년월일을 입력하세요." });
       } else if (this.user.gender === "") {
         this.$swal({ icon: "error", title: "성별 입력하세요." });
+      } else if (this.selectedSido === "") {
+        this.$swal({ icon: "error", title: "주소를 입력하세요." });
       } else if (this.selectedGu === "") {
         this.$swal({ icon: "error", title: "주소를 입력하세요." });
       } else if (this.selectedDong === "") {
@@ -301,42 +308,51 @@ export default {
         uid: this.user.id,
         upass: this.user.password,
         uname: this.user.name,
-        uadd: this.selectedGu + " " + this.selectedDong,
+        uadd: "",
         ugender: this.user.gender,
         ubirth: this.yy + "." + this.mm + "." + this.dd,
       };
 
-      if (this.user.id.length < 6 || this.user.id.length > 15) {
-        this.$swal({
-          icon: "error",
-          title: "아이디를 다시 확인해주세요.",
-        });
-      } else if (6 <= this.user.id.length && this.user.id.length <= 15) {
-        http.get("/user/idcheck/" + this.user.id).then((reps) => {
-          document.getElementById("id_check").style.display = "none";
-          if (reps.data === "SUCCESS") {
-            if (this.user.password != this.user.repassword) {
+      let addcode = this.selectedGu + this.selectedDong;
+      http.get("/code/addcode/" + addcode).then((resp) => {
+        userDto.uadd =
+          resp.data.sidoName +
+          " " +
+          resp.data.gugunName +
+          " " +
+          resp.data.dongName;
+        if (this.user.id.length < 6 || this.user.id.length > 15) {
+          this.$swal({
+            icon: "error",
+            title: "아이디를 다시 확인해주세요.",
+          });
+        } else if (6 <= this.user.id.length && this.user.id.length <= 15) {
+          http.get("/user/idcheck/" + this.user.id).then((reps) => {
+            document.getElementById("id_check").style.display = "none";
+            if (reps.data === "SUCCESS") {
+              if (this.user.password != this.user.repassword) {
+                this.$swal({
+                  icon: "error",
+                  title: "비밀번호를 다시 확인해주세요.",
+                });
+              } else {
+                http.post("/user/sign", userDto).then(() => {
+                  this.$swal({
+                    icon: "success",
+                    title: "회원가입 성공.",
+                  });
+                  this.$router.push("/login");
+                });
+              }
+            } else {
               this.$swal({
                 icon: "error",
-                title: "비밀번호를 다시 확인해주세요.",
-              });
-            } else {
-              http.post("/user/sign", userDto).then(() => {
-                this.$swal({
-                  icon: "success",
-                  title: "회원가입 성공.",
-                });
-                this.$router.push("/login");
+                title: "아이디를 다시 확인해주세요.",
               });
             }
-          } else {
-            this.$swal({
-              icon: "error",
-              title: "아이디를 다시 확인해주세요.",
-            });
-          }
-        });
-      }
+          });
+        }
+      });
     },
   },
 };
