@@ -42,23 +42,14 @@
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-4" label="주소" label-for="input-4">
-          <b-row>
-            <b-col>
-              <b-form-select v-model="gu" id="guName">
-                <option disabled :value="gu">
-                  {{ gu }}
-                </option>
-              </b-form-select>
-            </b-col>
-            <b-col>
-              <b-form-select id="dongName" v-model="dong">
-                <option disabled :value="dong">
-                  {{ dong }}
-                </option>
-              </b-form-select>
-            </b-col>
-          </b-row>
+        <b-form-group id="input-group-4" label="시도" label-for="input-4">
+          <b-form-input
+            id="input-4"
+            v-model="userInfo.uadd"
+            type="email"
+            required
+            disabled
+          ></b-form-input>
         </b-form-group>
       </div>
     </b-card>
@@ -88,22 +79,10 @@ export default {
         ugender: "",
         uadd: "",
       },
-      selectedDongs: [],
-      selectedGu: "",
-      selectedDong: "",
     };
   },
   computed: {
     ...mapState("userStore", ["isLogin", "userInfo"]),
-
-    gu() {
-      let str = this.userInfo.uadd.split(" ");
-      return str[0];
-    },
-    dong() {
-      let str = this.userInfo.uadd.split(" ");
-      return str[1];
-    },
   },
   methods: {
     ...mapMutations("userStore", ["SET_IS_LOGIN", "SET_USER_INFO"]),

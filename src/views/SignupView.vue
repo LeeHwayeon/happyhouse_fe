@@ -136,7 +136,7 @@
                       <b-col>
                         <b-form-select
                           v-model="selectedSido"
-                          id="guName"
+                          id="sidoName"
                           @change="getSido"
                         >
                           <option
@@ -321,6 +321,8 @@ export default {
           resp.data.gugunName +
           " " +
           resp.data.dongName;
+        console.log(userDto.uadd);
+
         if (this.user.id.length < 6 || this.user.id.length > 15) {
           this.$swal({
             icon: "error",

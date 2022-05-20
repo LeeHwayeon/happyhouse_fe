@@ -45,30 +45,51 @@
         <b-form-group id="input-group-4" label="주소" label-for="input-4">
           <b-row>
             <b-col>
-              <b-form-select v-model="selectedGu" id="guName" @change="getDong">
-                <option
-                  v-for="(item, index) in gu"
-                  :key="index"
-                  :value="item.gugunName"
-                >
-                  {{ item.gugunName }}
-                </option>
-              </b-form-select>
-            </b-col>
-            <b-col>
-              <b-form-select
-                id="dongName"
-                v-model="selectedDong"
-                :options="dong"
-              >
-                <option
-                  v-for="(item, index) in selectedDongs"
-                  :key="index"
-                  :value="item"
-                >
-                  {{ item }}
-                </option>
-              </b-form-select>
+              <b-form-group id="input-group-4" label-for="input-4">
+                <b-row>
+                  <b-col>
+                    <b-form-select
+                      v-model="selectedSido"
+                      id="sidoName"
+                      @change="getSido"
+                    >
+                      <option
+                        v-for="(item, index) in sido"
+                        :key="index"
+                        :value="item.sidoCode"
+                      >
+                        {{ item.sidoName }}
+                      </option>
+                    </b-form-select>
+                  </b-col>
+                  <b-col>
+                    <b-form-select
+                      v-model="selectedGu"
+                      id="guName"
+                      @change="getDong"
+                    >
+                      <option
+                        v-for="(item, index) in gu"
+                        :key="index"
+                        :value="item.gugunCode"
+                      >
+                        {{ item.gugunName }}
+                      </option>
+                    </b-form-select>
+                  </b-col>
+                  <b-col>
+                    <b-form-select id="dongName" v-model="selectedDong">
+                      <option
+                        v-for="(item, index) in dong"
+                        :key="index"
+                        :value="item.dongCode"
+                      >
+                        {{ item.dongName }}
+                      </option>
+                    </b-form-select>
+                  </b-col>
+                </b-row>
+              </b-form-group>
             </b-col>
           </b-row>
         </b-form-group>
@@ -98,18 +119,18 @@ export default {
         ugender: "",
         uadd: "",
       },
-      selectedDongs: [],
+      selectedSido: "",
       selectedGu: "",
       selectedDong: "",
     };
   },
   created() {
-    this.$store.dispatch("getGuGunDong");
+    this.$store.dispatch("getSido");
   },
   computed: {
     ...mapState("userStore", ["isLogin", "userInfo"]),
-    gudong() {
-      return this.$store.state.gudong;
+    sido() {
+      return this.$store.state.sido;
     },
     dong() {
       return this.$store.state.dong;
@@ -120,37 +141,54 @@ export default {
   },
   methods: {
     ...mapActions("userStore", ["userConfirm", "getUserInfo"]),
+    getSido() {
+      console.log("시도 " + this.selectedSido);
+      this.$store.dispatch("getGugun", this.selectedSido);
+    },
     getDong() {
-      console.log(this.selectedGu);
-      let results = [];
-      for (let i = 0; i < this.gudong.length; i++) {
-        if (this.gudong[i].gugunName == this.selectedGu) {
-          results.push(this.gudong[i].dongName);
-        }
-      }
-      this.selectedDongs = results;
-      console.log(this.selectedDongs);
+      console.log("구" + this.selectedGu);
+      this.$store.dispatch("getDong", this.selectedGu);
     },
     clickmodify() {
       if (this.user.upass === "") {
-        this.$swal({ icon: "error", title: "비밀번호를 입력하세요.." });
-      } else if (this.selectedGu === "" || this.selectedDong === "") {
-        this.$swal({ icon: "error", title: "주소를 선택하세요." });
+        this.$swal({ icon: "error", title: "변경할 비밀번호를 입력하세요." });
+      } else if (this.selectedSido === "") {
+        this.$swal({ icon: "error", title: "주소를 입력하세요." });
+      } else if (this.selectedGu === "") {
+        this.$swal({ icon: "error", title: "주소를 입력하세요." });
+      } else if (this.selectedDong === "") {
+        this.$swal({ icon: "error", title: "주소를 입력하세요." });
       } else {
         let userDto = {
           uid: this.userInfo.uid,
           upass: this.user.upass,
-          uadd: this.selectedGu + " " + this.selectedDong,
+          uadd: "",
         };
-        http.put("/user/update", userDto).then(() => {
-          let user = {
-            uid: this.userInfo.uid,
-            upass: this.user.upass,
-          };
-          sessionStorage.removeItem("access-token");
-          this.login(user);
-          this.$swal({ icon: "success", title: "정보 수정 성공." });
-          this.$router.push("/mypage");
+        let addcode = this.selectedGu + this.selectedDong;
+        console.log("addcode :" + addcode);
+
+        http.get("/code/addcode/" + addcode).then((resp) => {
+          console.log("결과");
+          console.log(resp);
+
+          userDto.uadd =
+            resp.data.sidoName +
+            " " +
+            resp.data.gugunName +
+            " " +
+            resp.data.dongName;
+          console.log(userDto.uadd);
+
+          http.put("/user/update", userDto).then(() => {
+            let user = {
+              uid: this.userInfo.uid,
+              upass: this.user.upass,
+            };
+            sessionStorage.removeItem("access-token");
+            this.login(user);
+            this.$swal({ icon: "success", title: "정보 수정 성공." });
+            this.$router.push("/mypage");
+          });
         });
       }
     },
