@@ -8,22 +8,39 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    gudong: [],
+    sido: [],
     gu: [],
     dong: [],
   },
   getters: {},
   mutations: {
-    GET_GUGUN_DONG(state, payload) {
-      state.gudong = payload.gudong;
-      state.gu = payload.gugun;
+    GET_SIDO(state, payload) {
+      state.sido = payload;
+    },
+    GET_GUGUN(state, payload) {
+      state.gu = payload;
+    },
+    GET_DONG(state, payload) {
+      state.dong = payload;
     },
   },
   actions: {
-    getGuGunDong({ commit }) {
+    getSido({ commit }) {
       http.get("/code").then(({ data }) => {
         console.log(data);
-        commit("GET_GUGUN_DONG", data);
+        commit("GET_SIDO", data);
+      });
+    },
+    getGugun({ commit }, sidocode) {
+      http.get("/code/gugun/" + sidocode).then(({ data }) => {
+        console.log(data);
+        commit("GET_GUGUN", data);
+      });
+    },
+    getDong({ commit }, guguncode) {
+      http.get("/code/dong/" + guguncode).then(({ data }) => {
+        console.log(data);
+        commit("GET_DONG", data);
       });
     },
   },

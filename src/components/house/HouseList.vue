@@ -2,24 +2,35 @@
   <div>
     <b-row class="search_header mb-4 text-center">
       <b-col cols="2">
+        <b-form-select v-model="selectedSido" id="guName" @change="getSido">
+          <option
+            v-for="(item, index) in sido"
+            :key="index"
+            :value="item.sidoCode"
+          >
+            {{ item.sidoName }}
+          </option>
+        </b-form-select>
+      </b-col>
+      <b-col cols="2">
         <b-form-select v-model="selectedGu" id="guName" @change="getDong">
           <option
             v-for="(item, index) in gu"
             :key="index"
-            :value="item.gugunName"
+            :value="item.gugunCode"
           >
             {{ item.gugunName }}
           </option>
         </b-form-select>
       </b-col>
       <b-col cols="2">
-        <b-form-select id="dongName" v-model="selectedDong" :options="dong">
+        <b-form-select id="dongName" v-model="selectedDong">
           <option
-            v-for="(item, index) in selectedDongs"
+            v-for="(item, index) in dong"
             :key="index"
-            :value="item"
+            :value="item.dongCode"
           >
-            {{ item }}
+            {{ item.dongName }}
           </option>
         </b-form-select>
       </b-col>
@@ -48,6 +59,7 @@ export default {
   data() {
     return {
       selectedDongs: [],
+      selectedSido: "",
       selectedGu: "",
       selectedDong: "",
       aptName: "",
@@ -57,7 +69,7 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch("getGuGunDong");
+    this.$store.dispatch("getSido");
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -74,8 +86,8 @@ export default {
     }
   },
   computed: {
-    gudong() {
-      return this.$store.state.gudong;
+    sido() {
+      return this.$store.state.sido;
     },
     dong() {
       return this.$store.state.dong;
@@ -85,16 +97,11 @@ export default {
     },
   },
   methods: {
+    getSido() {
+      this.$store.dispatch("getGugun", this.selectedSido);
+    },
     getDong() {
-      console.log(this.selectedGu);
-      let results = [];
-      for (let i = 0; i < this.gudong.length; i++) {
-        if (this.gudong[i].gugunName == this.selectedGu) {
-          results.push(this.gudong[i].dongName);
-        }
-      }
-      this.selectedDongs = results;
-      console.log(this.selectedDongs);
+      this.$store.dispatch("getDong", this.selectedGu);
     },
     search() {
       if (!this.selectedGu && !this.selectedDong && this.aptName.length == 0) {
