@@ -49,6 +49,40 @@
         >
       </b-col>
     </b-row>
+    <div class="m-3">
+      <div class="mb-3">
+        <b-button v-b-toggle.my-collapse>설정</b-button>
+      </div>
+      <b-collapse id="my-collapse">
+        <b-card title="준공년도">
+          <div>
+            <label for="range-1"></label>
+            <b-form-input
+              id="range-1"
+              v-model="buildyear"
+              type="range"
+              min="1961"
+              max="2022"
+            ></b-form-input>
+            <div class="mt-2">준공년도: {{ buildyear }} 이후</div>
+          </div>
+        </b-card>
+        <b-card title="매매가">
+          <div>
+            <label for="range-1"></label>
+            <b-form-input
+              id="range-1"
+              v-model="aptprice"
+              type="range"
+              min="0"
+              max="50"
+              step="0.5"
+            ></b-form-input>
+            <div class="mt-2">매매가: {{ aptprice }}억 이상</div>
+          </div>
+        </b-card>
+      </b-collapse>
+    </div>
     <div class="search_content">
       <div id="map" class="mb-5"></div>
       <div class="search_list">
@@ -86,6 +120,9 @@ import http from "@/api/http.js";
 export default {
   data() {
     return {
+      p: 2,
+      buildyear: "2022",
+      aptprice: 0,
       selectedSido: "",
       selectedGu: "",
       selectedDong: "",
@@ -155,11 +192,22 @@ export default {
       ) {
         console.log("선택한 시 : " + this.selectedSido);
         console.log("선택한 구 : " + this.selectedGu);
-        http.get("/housedeal/sidogugun/" + this.selectedGu).then(({ data }) => {
-          console.log(data);
-          this.aptLists = data; //검색 결과
-          this.getLists();
-        });
+        http
+          .get(
+            "/housedeal/sidogugun/" +
+              this.selectedGu +
+              "/buildyear/" +
+              this.buildyear +
+              "/aptprice/" +
+              this.aptprice +
+              "?p=" +
+              this.p
+          )
+          .then(({ data }) => {
+            console.log(data);
+            this.aptLists = data; //검색 결과
+            this.getLists();
+          });
       } else if (
         //시, 구군, 동만 입력했을 때
         this.selectedSido !== "" &&
