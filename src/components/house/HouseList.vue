@@ -48,11 +48,11 @@
           >검색</b-button
         >
       </b-col>
+      <b-col cols="1">
+        <b-button v-b-toggle.my-collapse>설정</b-button>
+      </b-col>
     </b-row>
     <div class="m-3">
-      <div class="mb-3">
-        <b-button v-b-toggle.my-collapse>설정</b-button>
-      </div>
       <b-collapse id="my-collapse">
         <b-card title="준공년도">
           <div>
@@ -91,7 +91,7 @@
           :key="index"
           class="m-2 shadow"
         >
-          <b-row>
+          <b-row @click="clickDetail(apt.aptCode)">
             <b-col class="img_box" cols="5">
               <img
                 :src="require(`@/assets/aptimg/apt${src[index]}.jpg`)"
@@ -111,13 +111,18 @@
         </b-card>
       </div>
     </div>
+    <template v-if="this.aptDetail.length > 0">
+      <house-detail :aptDetail="this.aptDetail"></house-detail>
+    </template>
   </div>
 </template>
 
 <script>
 import http from "@/api/http.js";
+import HouseDetail from "@/components/house/HouseDetail.vue";
 
 export default {
+  components: { HouseDetail },
   data() {
     return {
       p: 2,
@@ -131,6 +136,8 @@ export default {
       markers: [],
       aptLists: [],
       src: [],
+      aptCode: 0,
+      aptDetail: [],
     };
   },
   created() {
@@ -360,7 +367,7 @@ export default {
 
         var customOverlay = new kakao.maps.CustomOverlay({
           position: new kakao.maps.LatLng(item.lat, item.lng),
-          content: `<div class="window" style="background: #fb752d;border-radius: 10px;font-weight: 500;color: #fff;padding:10px;">${item.dealAmount.trim()}</div>`,
+          content: `<div class="window" style="background: #fb752d;border-radius: 10px;font-weight: 500;color: #fff;padding:10px;">${item.min} ~ ${item.max}</div>`,
           xAnchor: 0.5,
           yAnchor: 2.1,
         });
@@ -374,6 +381,12 @@ export default {
 
       const position = this.aptLists[0];
       this.map.setCenter(new kakao.maps.LatLng(position.lat, position.lng));
+    },
+    clickDetail(aptCode) {
+      http.get("/housedeal/detail/" + aptCode).then(({ data }) => {
+        console.log(data);
+        this.aptDetail = data;
+      });
     },
   },
   filters: {
