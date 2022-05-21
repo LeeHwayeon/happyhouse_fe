@@ -181,7 +181,7 @@ export default {
         // 입력 안했을 떄
         this.$swal({
           icon: "error",
-          title: "검색할 구 또는 아파트 이름을 입력하세요!",
+          title: "검색할 시 와 구군을 입력하세요!",
         });
       } else if (
         //시, 구군만 입력했을 떄
@@ -219,10 +219,20 @@ export default {
         console.log("선택한 구 : " + this.selectedGu);
         console.log("선택한 동 : " + this.selectedDong);
         http
-          .get("/housedeal/dong/" + this.selectedGu + this.selectedDong)
+          .get(
+            "/housedeal/dong/" +
+              this.selectedGu +
+              this.selectedDong +
+              "/buildyear/" +
+              this.buildyear +
+              "/aptprice/" +
+              this.aptprice +
+              "?p=" +
+              this.p
+          )
           .then(({ data }) => {
             console.log(data);
-            this.aptLists = data; //검색 결과
+            this.aptLists = data.housedealList; //검색 결과
             this.getLists();
           });
       } else if (
@@ -237,14 +247,20 @@ export default {
         console.log("아파트 이름 :" + this.aptName);
         http
           .get(
-            "/housedeal/aptname/" +
+            "/housedeal/guguncode/" +
+              this.selectedGu +
+              "/buildyear/" +
+              this.buildyear +
+              "/aptprice/" +
+              this.aptprice +
+              "/aptname/" +
               this.aptName +
-              "/guguncode/" +
-              this.selectedGu
+              "?p=" +
+              this.p
           )
           .then(({ data }) => {
             console.log(data);
-            this.aptLists = data; //검색 결과
+            this.aptLists = data.housedealList; //검색 결과
             this.getLists();
           });
       } else {
@@ -256,15 +272,21 @@ export default {
 
         http
           .get(
-            "/housedeal/aptname/" +
-              this.aptName +
-              "/dongcode/" +
+            "/housedeal/dongcode/" +
               this.selectedGu +
-              this.selectedDong
+              this.selectedDong +
+              "/buildyear/" +
+              this.buildyear +
+              "/aptprice/" +
+              this.aptprice +
+              "/aptname/" +
+              this.aptName +
+              "?p=" +
+              this.p
           )
           .then(({ data }) => {
             console.log(data);
-            this.aptLists = data; //검색 결과
+            this.aptLists = data.housedealList; //검색 결과
             this.getLists();
           });
       }
