@@ -121,7 +121,7 @@ export default {
   data() {
     return {
       p: 2,
-      buildyear: "2022",
+      buildyear: "1961",
       aptprice: 0,
       selectedSido: "",
       selectedGu: "",
@@ -205,7 +205,7 @@ export default {
           )
           .then(({ data }) => {
             console.log(data);
-            this.aptLists = data; //검색 결과
+            this.aptLists = data.housedealList; //검색 결과
             this.getLists();
           });
       } else if (
