@@ -140,34 +140,95 @@ export default {
       this.$store.dispatch("getDong", this.selectedGu);
     },
     search() {
-      if (
-        this.selectedSido === "" &&
-        this.selectedGu === "" &&
-        this.selectedDong === "" &&
-        this.aptName.length == 0
-      ) {
+      if (this.selectedSido === "" && this.selectedGu === "") {
+        // 입력 안했을 떄
         this.$swal({
           icon: "error",
           title: "검색할 구 또는 아파트 이름을 입력하세요!",
         });
-      } else {
-        console.log("선택한 시 :" + this.selectedSido);
-        // console.log("선택한 구 :" + this.selectedGu);
-        // console.log("선택한 동 :" + this.selectedDong);
-        // console.log("아파트 이름 :" + this.aptName);
-
-        http.get("/housedeal/sido/" + this.selectedSido).then((resp) => {
-          console.log(resp);
-          this.aptLists = resp.data; //검색 결과
-          if (this.aptLists.length == 0) {
-            this.$swal({ icon: "error", title: "검색 결과가 없습니다!" });
-          } else {
-            this.displayMarkers(); //마커 표시
-            document.getElementsByClassName("search_list")[0].style.display =
-              "block"; //리스트 목록 보이게
-            // this.changeImg();
-          }
+      } else if (
+        //시, 구군만 입력했을 떄
+        this.selectedSido !== "" &&
+        this.selectedGu !== "" &&
+        this.selectedDong === "" &&
+        this.aptName === ""
+      ) {
+        console.log("선택한 시 : " + this.selectedSido);
+        console.log("선택한 구 : " + this.selectedGu);
+        http.get("/housedeal/sidogugun/" + this.selectedGu).then(({ data }) => {
+          console.log(data);
+          this.aptLists = data; //검색 결과
+          this.getLists();
         });
+      } else if (
+        //시, 구군, 동만 입력했을 때
+        this.selectedSido !== "" &&
+        this.selectedGu !== "" &&
+        this.selectedDong !== "" &&
+        this.aptName === ""
+      ) {
+        console.log("선택한 시 : " + this.selectedSido);
+        console.log("선택한 구 : " + this.selectedGu);
+        console.log("선택한 동 : " + this.selectedDong);
+        http
+          .get("/housedeal/dong/" + this.selectedGu + this.selectedDong)
+          .then(({ data }) => {
+            console.log(data);
+            this.aptLists = data; //검색 결과
+            this.getLists();
+          });
+      } else if (
+        //시, 구군, 아파트이름만 입력했을 때
+        this.selectedSido !== "" &&
+        this.selectedGu !== "" &&
+        this.selectedDong === "" &&
+        this.aptName !== ""
+      ) {
+        console.log("선택한 시 : " + this.selectedSido);
+        console.log("선택한 구 : " + this.selectedGu);
+        console.log("아파트 이름 :" + this.aptName);
+        http
+          .get(
+            "/housedeal/aptname/" +
+              this.aptName +
+              "/guguncode/" +
+              this.selectedGu
+          )
+          .then(({ data }) => {
+            console.log(data);
+            this.aptLists = data; //검색 결과
+            this.getLists();
+          });
+      } else {
+        // 시, 구군, 동, 아파트 이름 전부 입력했을 때
+        console.log("선택한 시 :" + this.selectedSido);
+        console.log("선택한 구 :" + this.selectedGu);
+        console.log("선택한 동 :" + this.selectedDong);
+        console.log("아파트 이름 :" + this.aptName);
+
+        http
+          .get(
+            "/housedeal/aptname/" +
+              this.aptName +
+              "/dongcode/" +
+              this.selectedGu +
+              this.selectedDong
+          )
+          .then(({ data }) => {
+            console.log(data);
+            this.aptLists = data; //검색 결과
+            this.getLists();
+          });
+      }
+    },
+    getLists() {
+      if (this.aptLists.length == 0) {
+        this.$swal({ icon: "error", title: "검색 결과가 없습니다!" });
+      } else {
+        this.displayMarkers(); //마커 표시
+        document.getElementsByClassName("search_list")[0].style.display =
+          "block"; //리스트 목록 보이게
+        // this.changeImg();
       }
     },
     changeImg() {
