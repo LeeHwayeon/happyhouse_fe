@@ -14,6 +14,7 @@ export default new Vuex.Store({
     subwayLists: [],
     subwayCoords: [],
     aptDetail: [],
+    gymList: [],
   },
   getters: {},
   mutations: {
@@ -35,6 +36,9 @@ export default new Vuex.Store({
     GET_HOUSE_DETAIL(state, payload) {
       state.aptDetail = payload;
     },
+    GET_GYM_LIST(state, payload) {
+      state.gymList = payload;
+    },
   },
   actions: {
     getSido({ commit }) {
@@ -54,18 +58,24 @@ export default new Vuex.Store({
     },
     getSubwayList({ commit }) {
       http.get("/subway").then(({ data }) => {
-        console.log(data);
+        // console.log(data);
         commit("GET_SUBWAY_LIST", data);
       });
     },
     getSubwayCoordsList({ commit }, arr) {
-      console.log("주소 변환 들어옴", arr);
+      // console.log("주소 변환 들어옴", arr);
       commit("GET_SUBWAY_COORDS_LIST", arr);
     },
     getHouseDetail({ commit }, aptCode) {
       http.get("/housedeal/detail/" + aptCode).then(({ data }) => {
-        console.log(data);
+        // console.log(data);
         commit("GET_HOUSE_DETAIL", data);
+      });
+    },
+    getGymList({ commit }) {
+      http.get("/gym").then(({ data }) => {
+        // console.log("헬스장 : ", data);
+        commit("GET_GYM_LIST", data);
       });
     },
   },

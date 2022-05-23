@@ -151,6 +151,7 @@
 
 <script>
 import http from "@/api/http.js";
+import axios from "axios";
 import HouseDetail from "@/components/house/HouseDetail.vue";
 
 export default {
@@ -182,14 +183,18 @@ export default {
       this.src.push(randomNumber);
     }
 
-    console.log(this.src);
+    // console.log(this.src);
 
+    // 지하철 리스트 가져오기
     this.$store.dispatch("getSubwayList");
 
     if (this.$route.query.p != undefined) {
       this.search();
-      console.log(this.aptLists);
+      // console.log(this.aptLists);
     }
+
+    // 헬스장 리스트 가져오기
+    this.$store.dispatch("getGymList");
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -220,6 +225,9 @@ export default {
     },
     aptDetail() {
       return this.$store.state.aptDetail;
+    },
+    gymList() {
+      return this.$store.state.gymList;
     },
   },
   methods: {
@@ -450,6 +458,7 @@ export default {
       // console.log("지하철 리스트 들어왔나?", this.subwayLists);
 
       this.geocode();
+      this.gymcode();
     },
     geocode() {
       // 주소-좌표 변환 객체를 생성합니다
@@ -486,7 +495,46 @@ export default {
       // console.log("주소 변환 잘 됐나??", arr);
       this.startGeocode(arr);
     },
-    gymcode() {},
+    gymcode() {
+      // 주소-좌표 변환 객체를 생성합니다
+      // const geocoder = new kakao.maps.services.Geocoder();
+      console.log("변환 전 ", this.gymList);
+
+      const arr = new Array();
+      this.gymList.forEach((item) => {
+        // // 주소로 좌표를 검색합니다
+        // geocoder.addressSearch(item.sjibun, function (result, status) {
+        //   // 정상적으로 검색이 완료됐으면
+        //   if (status === kakao.maps.services.Status.OK) {
+        //     const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+        //     // console.log(item.tname + " 좌표 : ", coords);
+        //     arr.push({
+        //       sdoro: item.sdoro,
+        //       sjibun: item.sjibun,
+        //       sname: item.sname,
+        //       sopen: item.sopen,
+        //       swork: item.swork,
+        //       slat: coords.Ma,
+        //       slng: coords.La,
+        //     });
+        //   }
+        // });
+        var url =
+          "https://dapi.kakao.com/v2/local/search/address.json?query=" +
+          item.sjibun;
+        axios
+          .get(url, {
+            headers: {
+              Authorization: "KakaoAK 40868a23b3a27c7fee40b3f1358636ca",
+            },
+          })
+          .then(function (response) {
+            console.log(JSON.stringify(response.data));
+          });
+      });
+      console.log("변환 후", arr);
+    },
     startGeocode(arr) {
       this.$store.dispatch("getSubwayCoordsList", arr);
     },

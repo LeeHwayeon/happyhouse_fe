@@ -63,9 +63,9 @@ export default {
       return this.$store.state.subwayCoords;
     },
     stationName() {
-      console.log("computed");
+      // console.log("computed");
       this.subway();
-      console.log(this.station.tname);
+      // console.log(this.station.tname);
       return this.station.tname;
     },
     parklist() {
@@ -103,8 +103,8 @@ export default {
             "/lng/" +
             this.aptDetail[0].lng
         )
-        .then((resp) => {
-          console.log(resp);
+        .then(() => {
+          // console.log(resp);
         });
     },
     subway() {
@@ -136,9 +136,9 @@ export default {
           this.station = item;
         }
       });
-      console.log("거리" + min);
+      // console.log("거리" + min);
       this.stationDistance = min;
-      console.log("역", this.station);
+      // console.log("역", this.station);
       // this.stationName = this.station.stationName;
     },
   },
