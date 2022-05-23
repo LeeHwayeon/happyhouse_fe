@@ -136,70 +136,66 @@ export default {
         });
     },
     getGym() {
+      console.log("초기화됨??", this.gymLists);
       let _this = this;
-      console.log("여기다");
-      console.log("1아파트 디테일 ", this.aptDetail);
-      console.log("1아파트 디테일 복사한거  ", this.apt);
 
       const geocoder = new kakao.maps.services.Geocoder();
 
       http.get("/gym/" + this.apt[0].dong).then(({ data }) => {
         console.log("axio 데이터", data);
-        if (data.length > 0) {
-          let min = 1; // 거리 비교용 min
-          console.log("min", min);
 
-          let coords = new Array();
+        let list = new Array();
+        let min = 1; // 거리 비교용 min
+        console.log("min", min);
+        console.log("데이터 갯수" + data.length);
+        for (let i = 0; i < data.length; i++) {
+          geocoder.addressSearch(data[i].sjibun, function (result, status) {
+            // 정상적으로 검색이 완료됐으면
+            if (status === kakao.maps.services.Status.OK) {
+              let coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-          for (let i = 0; i < data.length; i++) {
-            geocoder.addressSearch(data[i].sjibun, function (result, status) {
-              // 정상적으로 검색이 완료됐으면
-              if (status === kakao.maps.services.Status.OK) {
-                coords.push(new kakao.maps.LatLng(result[0].y, result[0].x));
-                console.log("_this", _this.aptDetail);
-
-                console.log("in coords", coords);
+              //거리 비교
+              if (
+                _this.getDistanceFromLatLonInKm(
+                  coords.Ma,
+                  coords.La,
+                  _this.aptDetail[0].lat,
+                  _this.aptDetail[0].lng
+                ) < min
+              ) {
+                min = _this.getDistanceFromLatLonInKm(
+                  coords.Ma,
+                  coords.La,
+                  _this.aptDetail[0].lat,
+                  _this.aptDetail[0].lng
+                );
+                _this.minGym = data[i];
+                _this.minGym.sdistance = min;
               }
-            });
-          }
 
-          if (
-            this.getDistanceFromLatLonInKm(
-              coords[0].Ma,
-              coords[0].La,
-              this.aptDetail[0].lat,
-              this.aptDetail[0].lng
-            ) < min
-          ) {
-            console.log("거리 비교");
-            min = this.getDistanceFromLatLonInKm(
-              coords[0].Ma,
-              coords[0].La,
-              this.aptDetail[0].lat,
-              this.aptDetail[0].lng
-            );
-            this.minGym = data[0];
-            this.minGym.sdistance = min;
-          }
-
-          if (
-            this.getDistanceFromLatLonInKm(
-              coords[0].Ma,
-              coords[0].La,
-              this.aptDetail[0].lat,
-              this.aptDetail[0].lng
-            ) < 1
-          ) {
-            this.gymLists.push(data[0]);
-          }
-
-          console.log("mingym", this.minGym);
-
-          console.log("밖", coords);
-          console.log("밖 ", this.aptDetail);
+              if (
+                _this.getDistanceFromLatLonInKm(
+                  coords.Ma,
+                  coords.La,
+                  _this.aptDetail[0].lat,
+                  _this.aptDetail[0].lng
+                ) < 1
+              ) {
+                console.log("내부", _this.gymLists);
+                list.push(data[i]);
+              }
+              //
+            }
+          });
         }
+        this.gymLists = list;
+        console.log("this 데이터");
+        console.log(this.minGym);
+        console.log(this.minGym.sdistance);
+        console.log(this.gymLists);
       });
     },
+
     subway() {
       this.apt = this.aptDetail;
       // console.log("복사됐나????", this.apt);
