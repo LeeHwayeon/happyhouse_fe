@@ -17,13 +17,21 @@
           </b-col>
           <b-col cols="2" v-if="item.cwriter == userInfo.uid">
             <b-button-group>
-              <b-button size="sm" variant="outline-primary">
+              <b-button
+                size="sm"
+                variant="outline-primary"
+                style="background-color: transparent; border: none"
+              >
                 <b-icon icon="pencil"></b-icon>
               </b-button>
-              <b-button size="sm" variant="outline-danger">
+              <b-button
+                size="sm"
+                variant="outline-danger"
+                style="background-color: transparent; border: none"
+              >
                 <b-icon
                   icon="x-circle-fill"
-                  scale="0.5"
+                  scale="1"
                   @click="commentdelete(item.cno)"
                 ></b-icon>
               </b-button>

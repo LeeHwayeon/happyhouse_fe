@@ -19,6 +19,7 @@
               class="mb-2"
               variant="outline-danger"
               @click="clickheart"
+              style="background-color: transparent; border: none"
             >
               <b-icon
                 v-if="click == false"
