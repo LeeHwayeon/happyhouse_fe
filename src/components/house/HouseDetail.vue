@@ -45,20 +45,54 @@ export default {
     return {
       sortBy: "dealYear",
       sortDesc: false,
-      fields: [
-        { key: "거래 년도", sortable: true },
-        { key: "거래 가격", sortable: true },
-      ],
-      items: [],
+      apt: [],
     };
   },
   created() {},
+  mounted() {
+    this.apt = this.aptDetail;
+    console.log("복사됐나????", this.apt);
+    this.subwayCoords.forEach((item) => {
+      if (
+        this.getDistanceFromLatLonInKm(
+          this.apt.lat,
+          this.apt.lng,
+          item.lat,
+          item.lng
+        ) <= 2000
+      ) {
+        console.log(item.tname + "역");
+      } else {
+        console.log("없음");
+      }
+    });
+  },
   computed: {
-    // items() {
-    //   items.push();
-    // },
+    subwayCoords() {
+      return this.$store.state.subwayCoords;
+    },
   },
   watch: {},
+  methods: {
+    //좌표 계산 함수
+    getDistanceFromLatLonInKm(lat1, lng1, lat2, lng2) {
+      function deg2rad(deg) {
+        return deg * (Math.PI / 180);
+      }
+      var R = 6371; // Radius of the earth in km
+      var dLat = deg2rad(lat2 - lat1); // deg2rad below
+      var dLon = deg2rad(lng2 - lng1);
+      var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) *
+          Math.cos(deg2rad(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var d = R * c; // Distance in km
+      return d;
+    },
+  },
 };
 </script>
 

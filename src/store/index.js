@@ -11,6 +11,8 @@ export default new Vuex.Store({
     sido: [],
     gu: [],
     dong: [],
+    subwayLists: [],
+    subwayCoords: [],
   },
   getters: {},
   mutations: {
@@ -22,6 +24,12 @@ export default new Vuex.Store({
     },
     GET_DONG(state, payload) {
       state.dong = payload;
+    },
+    GET_SUBWAY_LIST(state, payload) {
+      state.subwayLists = payload;
+    },
+    GET_SUBWAY_COORDS_LIST(state, payload) {
+      state.subwayCoords = payload;
     },
   },
   actions: {
@@ -39,6 +47,16 @@ export default new Vuex.Store({
       http.get("/code/dong/" + guguncode).then(({ data }) => {
         commit("GET_DONG", data);
       });
+    },
+    getSubwayList({ commit }) {
+      http.get("/subway").then(({ data }) => {
+        console.log(data);
+        commit("GET_SUBWAY_LIST", data);
+      });
+    },
+    getSubwayCoordsList({ commit }, arr) {
+      console.log("주소 변환 들어옴", arr);
+      commit("GET_SUBWAY_COORDS_LIST", arr);
     },
   },
   modules: {

@@ -182,10 +182,9 @@ export default {
       this.src.push(randomNumber);
     }
 
-    if (this.$route.query.p != undefined) {
-      this.search();
-      console.log(this.aptLists);
-    }
+    console.log(this.src);
+
+    this.$store.dispatch("getSubwayList");
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -210,6 +209,9 @@ export default {
     },
     gu() {
       return this.$store.state.gu;
+    },
+    subwayLists() {
+      return this.$store.state.subwayLists;
     },
   },
   methods: {
@@ -419,6 +421,49 @@ export default {
       // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
       const zoomControl = new kakao.maps.ZoomControl();
       this.map.addControl(zoomControl, kakao.maps.ControlPosition.LEFT);
+
+      console.log("주소 변환 시작하는 부분");
+      console.log("지하철 리스트 들어왔나?", this.subwayLists);
+
+      this.geocode();
+    },
+    geocode() {
+      // 주소-좌표 변환 객체를 생성합니다
+      const geocoder = new kakao.maps.services.Geocoder();
+
+      const arr = new Array();
+      this.subwayLists.forEach((item) => {
+        const str = item.tjibun;
+        const endIndex = str.indexOf("(");
+        const newAddress = str.substring(0, endIndex);
+        const splitNewAddress = newAddress.split(" ");
+        // console.log(item.tname + " " + newAddress);
+
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch(newAddress, function (result, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === kakao.maps.services.Status.OK) {
+            const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            // console.log(item.tname + " 좌표 : ", coords);
+            arr.push({
+              tline: item.tline,
+              tname: item.tname,
+              tsidoName: splitNewAddress[0],
+              tgugunName: splitNewAddress[1],
+              tdongName: splitNewAddress[2],
+              tlng: coords.La,
+              tlat: coords.Ma,
+            });
+          }
+        });
+      });
+
+      console.log("주소 변환 잘 됐나??", arr);
+      this.startGeocode(arr);
+    },
+    startGeocode(arr) {
+      this.$store.dispatch("getSubwayCoordsList", arr);
     },
     displayMarkers() {
       //현재 표시되어 있는 마커들이 있다면 마커에 등록된 map을 없애줌
