@@ -37,6 +37,7 @@
       <b-button href="#" variant="primary">Go somewhere</b-button>
     </b-card>
     {{ parklist }}
+    {{ gymList }}
   </div>
 </template>
 
@@ -50,10 +51,33 @@ export default {
       apt: [],
       station: [],
       stationDistance: 0,
+      test: [],
+      minGym: [
+        {
+          sdoro: "",
+          sjibun: "",
+          sname: "",
+          sopen: "",
+          swork: "",
+          slat: "",
+          slng: "",
+          sdistance: "",
+        },
+      ],
+      gymLists: [],
     };
   },
+  mounted() {
+    //스크립트 객체 생성
+    const script = document.createElement("script");
+    /* global kakao */
+    script.onload = () => kakao.maps.load();
+    //카카오 지도 api
+    script.src =
+      "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=40868a23b3a27c7fee40b3f1358636ca&libraries=services";
+    document.head.appendChild(script);
+  },
   created() {},
-  mounted() {},
   watch: {},
   computed: {
     aptDetail() {
@@ -70,6 +94,10 @@ export default {
     },
     parklist() {
       this.getpark();
+      return 0;
+    },
+    gymList() {
+      this.getGym();
       return 0;
     },
   },
@@ -106,6 +134,102 @@ export default {
         .then(() => {
           // console.log(resp);
         });
+    },
+    getGym() {
+      console.log("1아파트 디테일 ", this.aptDetail);
+      console.log("1아파트 디테일 복사한거  ", this.apt);
+
+      console.log(this.apt[0].dong);
+      const geocoder = new kakao.maps.services.Geocoder();
+
+      http.get("/gym/" + this.apt[0].dong).then(({ data }) => {
+        console.log("axio 데이터", data);
+        if (data.length > 0) {
+          let min = 1; // 거리 비교용 min
+          console.log("최소", min);
+
+          data.forEach((item) => {
+            // WTM 좌표를 WGS84 좌표계의 좌표로 변환합니다
+            geocoder.transCoord(item.sx, item.sy, transCoordCB, {
+              input_coord: kakao.maps.services.Coords.WTM, // 변환을 위해 입력한 좌표계 입니다
+              output_coord: kakao.maps.services.Coords.WGS84, // 변환 결과로 받을 좌표계 입니다
+            });
+
+            // 좌표 변환 결과를 받아서 처리할 콜백함수 입니다.
+            function transCoordCB(result, status) {
+              // 정상적으로 검색이 완료됐으면
+              if (status === kakao.maps.services.Status.OK) {
+                console.log("변환된 좌표", result[0].y, result[0].x);
+                // console.log("2아파트 디테일 ", this.aptDetail);
+                // console.log("2아파트 디테일 복사한거  ", this.apt);
+              }
+            }
+          });
+
+          // data.forEach((item) => {
+          //   // 주소로 좌표를 검색합니다
+          //   geocoder.addressSearch(item.sjibun, function (result, status) {
+          //     console.log("주소가 잘 들어오나요", item.sjibun);
+
+          //     // 정상적으로 검색이 완료됐으면
+          //     if (status === kakao.maps.services.Status.OK) {
+          //       console.log("result", result);
+          //       console.log("dkdkdkdkdkdk");
+
+          //       console.log("2아파트 디테일 ", this.aptDetail());
+          //       console.log("2아파트 디테일 복사한거  ", this.apt);
+
+          //       console.log(this.apt[0].lat);
+          //       console.log(this.apt[0].lng);
+
+          //       // const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+          //       // console.log(item.sname + " 좌표 : ", coords);
+
+          //       ////////////////////////////// 거리 비교
+          //       console.log(
+          //         "제대로 나오나요??? ",
+          //         this.getDistanceFromLatLonInKm(
+          //           result[0].x,
+          //           result[0].y,
+          //           this.apt[0].lat,
+          //           this.apt[0].lng
+          //         )
+          //       );
+
+          //       // if (
+          //       //   this.getDistanceFromLatLonInKm(
+          //       //     coords.Ma,
+          //       //     coords.La,
+          //       //     this.aptDetail[0].lat,
+          //       //     this.aptDetail[0].lng
+          //       //   ) < min
+          //       // ) {
+          //       //   console.log("거리 비교");
+          //       //   min = this.getDistanceFromLatLonInKm(
+          //       //     coords.Ma,
+          //       //     coords.La,
+          //       //     this.aptDetail[0].lat,
+          //       //     this.aptDetail[0].lng
+          //       //   );
+          //       //   this.minGym = item;
+          //       //   this.minGym.sdistance = min;
+          //       // }
+
+          //       // if (
+          //       //   this.getDistanceFromLatLonInKm(
+          //       //     coords.Ma,
+          //       //     coords.La,
+          //       //     this.aptDetail[0].lat,
+          //       //     this.aptDetail[0].lng
+          //       //   ) < 1
+          //       // ) {
+          //       //   this.gymLists.push(item); //
+          //       // }
+          //     }
+          //   });
+          // });
+        }
+      });
     },
     subway() {
       this.apt = this.aptDetail;
