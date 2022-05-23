@@ -36,11 +36,12 @@
       </b-row>
       <b-button href="#" variant="primary">Go somewhere</b-button>
     </b-card>
-    ff
+    {{ parklist }}
   </div>
 </template>
 
 <script>
+import http from "@/api/http";
 export default {
   data() {
     return {
@@ -67,6 +68,10 @@ export default {
       console.log(this.station.tname);
       return this.station.tname;
     },
+    parklist() {
+      this.getpark();
+      return 0;
+    },
   },
   methods: {
     //좌표 계산 함수
@@ -87,6 +92,20 @@ export default {
       var d = R * c; // Distance in km
 
       return d;
+    },
+    getpark() {
+      http
+        .get(
+          "/park/" +
+            this.aptDetail[0].dong +
+            "/lat/" +
+            this.aptDetail[0].lat +
+            "/lng/" +
+            this.aptDetail[0].lng
+        )
+        .then((resp) => {
+          console.log(resp);
+        });
     },
     subway() {
       this.apt = this.aptDetail;
