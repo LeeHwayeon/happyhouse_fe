@@ -43,6 +43,7 @@
 
 <script>
 import http from "@/api/http";
+
 export default {
   data() {
     return {
@@ -135,6 +136,7 @@ export default {
         });
     },
     getGym() {
+      let _this = this;
       console.log("여기다");
       console.log("1아파트 디테일 ", this.aptDetail);
       console.log("1아파트 디테일 복사한거  ", this.apt);
@@ -145,59 +147,56 @@ export default {
         console.log("axio 데이터", data);
         if (data.length > 0) {
           let min = 1; // 거리 비교용 min
+          console.log("min", min);
 
-          data.forEach((item) => {
-            // WTM 좌표를 WGS84 좌표계의 좌표로 변환합니다
-            geocoder.transCoord(item.sx, item.sy, transCoordCB, {
-              input_coord: kakao.maps.services.Coords.WTM, // 변환을 위해 입력한 좌표계 입니다
-              output_coord: kakao.maps.services.Coords.WGS84, // 변환 결과로 받을 좌표계 입니다
-            });
+          let coords = new Array();
 
-            const point = new promise();
-            // 좌표 변환 결과를 받아서 처리할 콜백함수 입니다.
-            async function transCoordCB(result, status) {
+          for (let i = 0; i < data.length; i++) {
+            geocoder.addressSearch(data[i].sjibun, function (result, status) {
               // 정상적으로 검색이 완료됐으면
-              const data = await new Promise(() => {
-                if (status === kakao.maps.services.Status.OK) {
-                  point.push({
-                    lat: result[0].y,
-                    lng: result[0].x,
-                  });
-                }
-              });
-            }
-            console.log(data);
-            console.log("ㅇㅇㅇㅇ", point[0].lat);
-            if (
-              this.getDistanceFromLatLonInKm(
-                point[0].lat,
-                point[0].lng,
-                this.aptDetail[0].lat,
-                this.aptDetail[0].lng
-              ) < min
-            ) {
-              console.log("거리 비교");
-              min = this.getDistanceFromLatLonInKm(
-                point[0].lat,
-                point[0].lng,
-                this.aptDetail[0].lat,
-                this.aptDetail[0].lng
-              );
-              this.minGym = item;
-              this.minGym.sdistance = min;
-            }
+              if (status === kakao.maps.services.Status.OK) {
+                coords.push(new kakao.maps.LatLng(result[0].y, result[0].x));
+                console.log("_this", _this.aptDetail);
 
-            if (
-              this.getDistanceFromLatLonInKm(
-                point[0].lat,
-                point[0].lng,
-                this.aptDetail[0].lat,
-                this.aptDetail[0].lng
-              ) < 1
-            ) {
-              this.gymLists.push(item); //
-            }
-          }); // 반복문(foreach 종료)
+                console.log("in coords", coords);
+              }
+            });
+          }
+
+          if (
+            this.getDistanceFromLatLonInKm(
+              coords[0].Ma,
+              coords[0].La,
+              this.aptDetail[0].lat,
+              this.aptDetail[0].lng
+            ) < min
+          ) {
+            console.log("거리 비교");
+            min = this.getDistanceFromLatLonInKm(
+              coords[0].Ma,
+              coords[0].La,
+              this.aptDetail[0].lat,
+              this.aptDetail[0].lng
+            );
+            this.minGym = data[0];
+            this.minGym.sdistance = min;
+          }
+
+          if (
+            this.getDistanceFromLatLonInKm(
+              coords[0].Ma,
+              coords[0].La,
+              this.aptDetail[0].lat,
+              this.aptDetail[0].lng
+            ) < 1
+          ) {
+            this.gymLists.push(data[0]);
+          }
+
+          console.log("mingym", this.minGym);
+
+          console.log("밖", coords);
+          console.log("밖 ", this.aptDetail);
         }
       });
     },
