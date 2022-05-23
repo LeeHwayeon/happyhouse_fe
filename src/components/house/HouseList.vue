@@ -107,7 +107,7 @@
 
       <div class="search_list">
         <b-card
-          v-for="(apt, index) in this.aptLists"
+          v-for="(apt, index) in aptLists"
           :key="index"
           class="m-2 shadow"
         >
@@ -171,6 +171,18 @@ export default {
       aptLists: [],
       src: [],
       aptCode: 0,
+      minGym: [
+        {
+          sdoro: "",
+          sjibun: "",
+          sname: "",
+          sopen: "",
+          swork: "",
+          slat: "",
+          slng: "",
+          sdistance: "",
+        },
+      ],
     };
   },
   created() {
@@ -181,7 +193,6 @@ export default {
       let randomNumber = Math.floor(Math.random() * 9) + 1;
       this.src.push(randomNumber);
     }
-
     // console.log(this.src);
 
     // 지하철 리스트 가져오기
@@ -224,6 +235,24 @@ export default {
     },
   },
   methods: {
+    getDistanceFromLatLonInKm(lat1, lng1, lat2, lng2) {
+      function deg2rad(deg) {
+        return deg * (Math.PI / 180);
+      }
+      var R = 6371; // Radius of the earth in km
+      var dLat = deg2rad(lat2 - lat1); // deg2rad below
+      var dLon = deg2rad(lng2 - lng1);
+      var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) *
+          Math.cos(deg2rad(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var d = R * c; // Distance in km
+
+      return d;
+    },
     linkGen(pageNum) {
       return `list?p=${pageNum}&si=${this.selectedSido}&gu=${this.selectedGu}&dong=${this.selectedDong}&name=${this.aptName}&buildyear=${this.buildyear}&aptprice=${this.aptprice}`;
     },
@@ -549,11 +578,15 @@ export default {
 
       const geocoder = new kakao.maps.services.Geocoder();
 
+      let _this = this;
       let arr = new Array();
+      let min = 1;
+      let list = new Array();
+
       http.get("/gym/" + dong).then(({ data }) => {
         console.log("axio 데이터", data);
-
         console.log("데이터 갯수" + data.length);
+
         for (let i = 0; i < data.length; i++) {
           geocoder.addressSearch(data[i].sjibun, function (result, status) {
             // 정상적으로 검색이 완료됐으면
@@ -568,12 +601,43 @@ export default {
                 slat: coords.Ma,
                 slng: coords.La,
               });
+
+              if (
+                _this.getDistanceFromLatLonInKm(
+                  coords.Ma,
+                  coords.La,
+                  _this.aptDetail[0].lat,
+                  _this.aptDetail[0].lng
+                ) < min
+              ) {
+                min = _this.getDistanceFromLatLonInKm(
+                  coords.Ma,
+                  coords.La,
+                  _this.aptDetail[0].lat,
+                  _this.aptDetail[0].lng
+                );
+                _this.minGym = data[i];
+                _this.minGym.sdistance = min;
+              }
+
+              if (
+                _this.getDistanceFromLatLonInKm(
+                  coords.Ma,
+                  coords.La,
+                  _this.aptDetail[0].lat,
+                  _this.aptDetail[0].lng
+                ) < 1
+              ) {
+                list.push(arr[i]);
+              }
             }
           });
         }
-        // console.log("arr", arr);
+        let allList = { arr, minGym: _this.minGym, list };
 
-        this.$store.dispatch("getGymList", arr);
+        this.$store.dispatch("getGymList", allList);
+        // this.$store.dispatch("NearGym", _this.minGym);
+        // this.$store.dispatch("NearGymList", list);
       });
     },
   },

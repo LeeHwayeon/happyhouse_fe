@@ -15,6 +15,8 @@ export default new Vuex.Store({
     subwayCoords: [],
     aptDetail: [],
     gymList: [],
+    neargym: [],
+    neargymList: [],
   },
   getters: {},
   mutations: {
@@ -37,9 +39,17 @@ export default new Vuex.Store({
       state.aptDetail = payload;
     },
     GET_GYM_LIST(state, payload) {
-      // console.log("store payload", payload);
-
-      state.gymList = payload;
+      console.log("store", payload);
+      state.neargym = payload.list;
+      state.gymList = payload.arr;
+      state.neargymList = payload.minGym;
+      console.log("2store,,,,,,", state.gymList);
+    },
+    NEAR_GYM_LIST(state, payload) {
+      state.neargymList = payload;
+    },
+    NEAR_GYM(state, payload) {
+      state.neargym = payload;
     },
   },
   actions: {
@@ -70,14 +80,18 @@ export default new Vuex.Store({
     },
     getHouseDetail({ commit }, aptCode) {
       http.get("/housedeal/detail/" + aptCode).then(({ data }) => {
-        // console.log(data);
         commit("GET_HOUSE_DETAIL", data);
       });
     },
     getGymList({ commit }, data) {
-      // console.log("store data", data);
-
+      console.log("list 찍어보자", data);
       commit("GET_GYM_LIST", data);
+    },
+    NearGym({ commit }, data) {
+      commit("NEAR_GYM", data);
+    },
+    NearGymList({ commit }, data) {
+      commit("NEAR_GYM_LIST", data);
     },
   },
   modules: {
