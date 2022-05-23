@@ -486,6 +486,7 @@ export default {
       // console.log("주소 변환 잘 됐나??", arr);
       this.startGeocode(arr);
     },
+    gymcode() {},
     startGeocode(arr) {
       this.$store.dispatch("getSubwayCoordsList", arr);
     },
