@@ -257,11 +257,6 @@ export default {
           ? this.$route.query.aptprice
           : this.aptprice;
 
-      if (this.aptname === undefined) {
-        this.aptName = "";
-        console.log("들어옴");
-      }
-
       if (
         this.selectedSido != this.$route.query.si ||
         this.$route.query.gu != this.selectedGu ||
@@ -275,7 +270,6 @@ export default {
       console.log("현재 페이지" + this.p);
       console.log(this.selectedSido);
       console.log(this.$route.query.si);
-      console.log(this.selectedSido != this.$route.query.si);
       console.log(this.selectedGu);
       console.log(this.$route.query.gu);
       console.log(this.$route.query.gu != this.selectedGu);

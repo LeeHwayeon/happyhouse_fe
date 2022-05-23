@@ -46,26 +46,12 @@ export default {
       sortBy: "dealYear",
       sortDesc: false,
       apt: [],
+      station: [],
     };
   },
   created() {},
   mounted() {
-    this.apt = this.aptDetail;
-    console.log("복사됐나????", this.apt);
-    this.subwayCoords.forEach((item) => {
-      if (
-        this.getDistanceFromLatLonInKm(
-          this.apt.lat,
-          this.apt.lng,
-          item.lat,
-          item.lng
-        ) <= 2000
-      ) {
-        console.log(item.tname + "역");
-      } else {
-        console.log("없음");
-      }
-    });
+    this.subway();
   },
   computed: {
     subwayCoords() {
@@ -73,6 +59,10 @@ export default {
     },
   },
   watch: {},
+  updated() {
+    this.subway();
+    console.log("업데이트 가능?");
+  },
   methods: {
     //좌표 계산 함수
     getDistanceFromLatLonInKm(lat1, lng1, lat2, lng2) {
@@ -90,7 +80,40 @@ export default {
           Math.sin(dLon / 2);
       var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       var d = R * c; // Distance in km
+
       return d;
+    },
+    subway() {
+      this.apt = this.aptDetail;
+      console.log("복사됐나????", this.apt);
+
+      let min = 2;
+
+      this.subwayCoords.forEach((item) => {
+        // console.log(this.apt[0].lat);
+        // console.log(this.apt[0].lng);
+        // console.log(item.tlat);
+        // console.log(item.tlng);
+
+        if (
+          this.getDistanceFromLatLonInKm(
+            this.apt[0].lat,
+            this.apt[0].lng,
+            item.tlat,
+            item.tlng
+          ) < min
+        ) {
+          min = this.getDistanceFromLatLonInKm(
+            this.apt[0].lat,
+            this.apt[0].lng,
+            item.tlat,
+            item.tlng
+          );
+          this.station = item;
+        }
+      });
+      console.log("거리" + min);
+      console.log("역", this.station);
     },
   },
 };
