@@ -185,6 +185,11 @@ export default {
     console.log(this.src);
 
     this.$store.dispatch("getSubwayList");
+
+    if (this.$route.query.p != undefined) {
+      this.search();
+      console.log(this.aptLists);
+    }
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -227,14 +232,6 @@ export default {
     search() {
       this.p = this.$route.query.p != undefined ? this.$route.query.p : 1;
 
-      if (
-        this.selectedSido != this.$route.query.si ||
-        this.$route.query.gu != this.selectedGu ||
-        this.$route.query.dong != this.selectedDong ||
-        this.$route.query.name != this.aptname
-      )
-        this.p = 1;
-
       this.selectedSido =
         this.$route.query.si != undefined && this.selectedSido === ""
           ? this.$route.query.si
@@ -259,6 +256,36 @@ export default {
         this.$route.query.aptprice != undefined
           ? this.$route.query.aptprice
           : this.aptprice;
+
+      if (this.aptname === undefined) {
+        this.aptName = "";
+        console.log("들어옴");
+      }
+
+      if (
+        this.selectedSido != this.$route.query.si ||
+        this.$route.query.gu != this.selectedGu ||
+        this.$route.query.dong != this.selectedDong ||
+        this.$route.query.name != this.aptName
+      ) {
+        this.p = 1;
+        console.log("페이지 초가화" + this.p);
+      }
+
+      console.log("현재 페이지" + this.p);
+      console.log(this.selectedSido);
+      console.log(this.$route.query.si);
+      console.log(this.selectedSido != this.$route.query.si);
+      console.log(this.selectedGu);
+      console.log(this.$route.query.gu);
+      console.log(this.$route.query.gu != this.selectedGu);
+      console.log(this.selectedDong);
+      console.log(this.$route.query.dong);
+      console.log(this.$route.query.dong != this.selectedDong);
+      console.log(this.aptName);
+      console.log(this.$route.query.name);
+      console.log(this.$route.query.name != this.aptName);
+      console.log("끝");
 
       if (this.selectedSido === "" && this.selectedGu === "") {
         // 입력 안했을 떄
