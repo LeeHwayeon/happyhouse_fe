@@ -14,6 +14,7 @@ export default new Vuex.Store({
     subwayLists: [],
     subwayCoords: [],
     aptDetail: [],
+    gymList: [],
   },
   getters: {},
   mutations: {
@@ -34,6 +35,11 @@ export default new Vuex.Store({
     },
     GET_HOUSE_DETAIL(state, payload) {
       state.aptDetail = payload;
+    },
+    GET_GYM_LIST(state, payload) {
+      // console.log("store payload", payload);
+
+      state.gymList = payload;
     },
   },
   actions: {
@@ -67,6 +73,11 @@ export default new Vuex.Store({
         // console.log(data);
         commit("GET_HOUSE_DETAIL", data);
       });
+    },
+    getGymList({ commit }, data) {
+      // console.log("store data", data);
+
+      commit("GET_GYM_LIST", data);
     },
   },
   modules: {

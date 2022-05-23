@@ -111,7 +111,7 @@
           :key="index"
           class="m-2 shadow"
         >
-          <b-row @click="clickDetail(apt.aptCode)">
+          <b-row @click="clickDetail(apt.aptCode, apt.dong)">
             <b-col class="img_box" cols="5">
               <img
                 :src="require(`@/assets/aptimg/apt${src[index]}.jpg`)"
@@ -405,6 +405,16 @@ export default {
       }
     },
     getLists() {
+      this.markers.forEach((item) => {
+        item.setMap(null);
+      });
+      const arr = document.getElementsByClassName("window");
+      console.log(arr.length);
+
+      for (let i = 0; i < arr.length; i++) {
+        arr[i].remove();
+      }
+
       if (this.aptLists.length == 0) {
         this.$swal({ icon: "error", title: "검색 결과가 없습니다!" });
         document.getElementsByClassName("search_list")[0].style.display =
@@ -491,11 +501,18 @@ export default {
       this.$store.dispatch("getSubwayCoordsList", arr);
     },
     displayMarkers() {
+      this.markers.forEach((item) => {
+        item.setMap(null);
+      });
+      const arr = document.getElementsByClassName("window");
+      console.log(arr.length);
+
+      for (let i = 0; i < arr.length; i++) {
+        arr[i].remove();
+      }
       //현재 표시되어 있는 마커들이 있다면 마커에 등록된 map을 없애줌
       if (this.markers.length > 0) {
-        this.markers.forEach((item) => {
-          item.setMap(null);
-        });
+        // document.getElementsByClassName("window").remove();
       }
 
       const imageSrc = require("@/assets/building.png"); //마커 이미지
@@ -527,8 +544,37 @@ export default {
       const position = this.aptLists[0];
       this.map.setCenter(new kakao.maps.LatLng(position.lat, position.lng));
     },
-    clickDetail(aptCode) {
+    clickDetail(aptCode, dong) {
       this.$store.dispatch("getHouseDetail", aptCode);
+
+      const geocoder = new kakao.maps.services.Geocoder();
+
+      let arr = new Array();
+      http.get("/gym/" + dong).then(({ data }) => {
+        console.log("axio 데이터", data);
+
+        console.log("데이터 갯수" + data.length);
+        for (let i = 0; i < data.length; i++) {
+          geocoder.addressSearch(data[i].sjibun, function (result, status) {
+            // 정상적으로 검색이 완료됐으면
+            if (status === kakao.maps.services.Status.OK) {
+              let coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+              arr.push({
+                swork: data[i].swork,
+                sopen: data[i].sopen,
+                sjibun: data[i].sjibun,
+                sdoro: data[i].sdoro,
+                sname: data[i].sname,
+                slat: coords.Ma,
+                slng: coords.La,
+              });
+            }
+          });
+        }
+        // console.log("arr", arr);
+
+        this.$store.dispatch("getGymList", arr);
+      });
     },
   },
   filters: {
