@@ -48,43 +48,63 @@
           >검색</b-button
         >
       </b-col>
-      <b-col cols="1">
-        <b-button v-b-toggle.my-collapse>설정</b-button>
-      </b-col>
     </b-row>
-    <div class="m-3">
-      <b-collapse id="my-collapse">
-        <b-card title="준공년도">
-          <div>
-            <label for="range-1"></label>
-            <b-form-input
-              id="range-1"
-              v-model="buildyear"
-              type="range"
-              min="1961"
-              max="2022"
-            ></b-form-input>
-            <div class="mt-2">준공년도: {{ buildyear }} 이후</div>
-          </div>
-        </b-card>
-        <b-card title="매매가">
-          <div>
-            <label for="range-1"></label>
-            <b-form-input
-              id="range-1"
-              v-model="aptprice"
-              type="range"
-              min="0"
-              max="50"
-              step="0.5"
-            ></b-form-input>
-            <div class="mt-2">매매가: {{ aptprice }}억 이상</div>
-          </div>
-        </b-card>
-      </b-collapse>
-    </div>
+
     <div class="search_content">
       <div id="map" class="mb-5"></div>
+
+      <div class="set_list" style="background-color: transparent">
+        <b-button
+          class="set_button"
+          style="background-color: transparent; border: none"
+          ><b-icon
+            icon="exclamation-circle-fill"
+            variant="success"
+            v-b-toggle.my-collapse
+          ></b-icon
+        ></b-button>
+
+        <div class="m-1">
+          <b-collapse id="my-collapse">
+            <b-card title="" class="mb-2" style="height: 120px">
+              <div>
+                <label
+                  for="range-01"
+                  style="font-weight: bolder; font-size: large"
+                  >준공년도</label
+                >
+                <b-form-input
+                  id="range-1"
+                  v-model="buildyear"
+                  type="range"
+                  min="1961"
+                  max="2022"
+                ></b-form-input>
+                <div class="mb-2">준공년도 : {{ buildyear }} 이후</div>
+              </div>
+            </b-card>
+            <b-card title="" class="mb-2" style="height: 120px">
+              <div>
+                <label
+                  for="range-1"
+                  style="font-weight: bolder; font-size: large"
+                  >매매가</label
+                >
+                <b-form-input
+                  id="range-1"
+                  v-model="aptprice"
+                  type="range"
+                  min="0"
+                  max="50"
+                  step="0.5"
+                ></b-form-input>
+                <div class="mb-2">매매가 : {{ aptprice }}억 이상</div>
+              </div>
+            </b-card>
+          </b-collapse>
+        </div>
+      </div>
+
       <div class="search_list">
         <b-card
           v-for="(apt, index) in this.aptLists"
@@ -98,7 +118,7 @@
                 :alt="src[index]"
               />
             </b-col>
-            <b-col cols="7">
+            <b-col cols="6">
               <b-card-title>{{ apt.dealAmount }}</b-card-title>
               <b-card-text>
                 {{ apt.apartmentName }}
@@ -107,10 +127,22 @@
                 >{{ apt.area }}m² | {{ apt.floor }}층</b-card-text
               >
             </b-col>
+            <b-col cols="1"> </b-col>
           </b-row>
         </b-card>
+        <div>
+          <b-pagination-nav
+            pills
+            size="sm"
+            :number-of-pages="page"
+            base-url=""
+            :link-gen="linkGen"
+            align="center"
+          ></b-pagination-nav>
+        </div>
       </div>
     </div>
+
     <template v-if="this.aptDetail.length > 0">
       <house-detail :aptDetail="this.aptDetail"></house-detail>
     </template>
@@ -125,8 +157,9 @@ export default {
   components: { HouseDetail },
   data() {
     return {
-      p: 2,
-      buildyear: "1961",
+      page: 1,
+      p: 1,
+      buildyear: "2000",
       aptprice: 0,
       selectedSido: "",
       selectedGu: "",
@@ -149,7 +182,10 @@ export default {
       this.src.push(randomNumber);
     }
 
-    console.log(this.src);
+    if (this.$route.query.p != undefined) {
+      this.search();
+      console.log(this.aptLists);
+    }
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -177,6 +213,9 @@ export default {
     },
   },
   methods: {
+    linkGen(pageNum) {
+      return `list?p=${pageNum}&si=${this.selectedSido}&gu=${this.selectedGu}&dong=${this.selectedDong}&name=${this.aptName}&buildyear=${this.buildyear}&aptprice=${this.aptprice}`;
+    },
     getSido() {
       this.$store.dispatch("getGugun", this.selectedSido);
     },
@@ -184,6 +223,41 @@ export default {
       this.$store.dispatch("getDong", this.selectedGu);
     },
     search() {
+      this.p = this.$route.query.p != undefined ? this.$route.query.p : 1;
+
+      if (
+        this.selectedSido != this.$route.query.si ||
+        this.$route.query.gu != this.selectedGu ||
+        this.$route.query.dong != this.selectedDong ||
+        this.$route.query.name != this.aptname
+      )
+        this.p = 1;
+
+      this.selectedSido =
+        this.$route.query.si != undefined && this.selectedSido === ""
+          ? this.$route.query.si
+          : this.selectedSido;
+      this.selectedGu =
+        this.$route.query.gu != undefined && this.selectedGu === ""
+          ? this.$route.query.gu
+          : this.selectedGu;
+      this.selectedDong =
+        this.$route.query.dong != undefined && this.selectedDong === ""
+          ? this.$route.query.dong
+          : this.selectedDong;
+      this.aptName =
+        this.$route.query.name != undefined && this.aptName === ""
+          ? this.$route.query.name
+          : this.aptName;
+      this.buildyear =
+        this.$route.query.buildyear != undefined
+          ? this.$route.query.buildyear
+          : this.buildyear;
+      this.aptprice =
+        this.$route.query.aptprice != undefined
+          ? this.$route.query.aptprice
+          : this.aptprice;
+
       if (this.selectedSido === "" && this.selectedGu === "") {
         // 입력 안했을 떄
         this.$swal({
@@ -213,6 +287,8 @@ export default {
           .then(({ data }) => {
             console.log(data);
             this.aptLists = data.housedealList; //검색 결과
+            this.page = data.totalPage;
+
             this.getLists();
           });
       } else if (
@@ -240,6 +316,7 @@ export default {
           .then(({ data }) => {
             console.log(data);
             this.aptLists = data.housedealList; //검색 결과
+            this.page = data.totalPage;
             this.getLists();
           });
       } else if (
@@ -268,6 +345,7 @@ export default {
           .then(({ data }) => {
             console.log(data);
             this.aptLists = data.housedealList; //검색 결과
+            this.page = data.totalPage;
             this.getLists();
           });
       } else {
@@ -294,6 +372,7 @@ export default {
           .then(({ data }) => {
             console.log(data);
             this.aptLists = data.housedealList; //검색 결과
+            this.page = data.totalPage;
             this.getLists();
           });
       }
@@ -301,6 +380,9 @@ export default {
     getLists() {
       if (this.aptLists.length == 0) {
         this.$swal({ icon: "error", title: "검색 결과가 없습니다!" });
+        document.getElementsByClassName("search_list")[0].style.display =
+          "none";
+        this.page = 1;
       } else {
         this.displayMarkers(); //마커 표시
         document.getElementsByClassName("search_list")[0].style.display =
@@ -447,6 +529,18 @@ export default {
 .search_content {
   position: relative;
 }
+.set_list {
+  display: block;
+  overflow: auto;
+  width: 30%;
+
+  background-color: rgba(240, 233, 233, 0.849);
+  position: absolute;
+  top: 7%;
+  left: 3.5%;
+  z-index: 10;
+}
+
 .search_list {
   display: none;
   overflow: auto;
