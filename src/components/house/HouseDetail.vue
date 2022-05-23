@@ -31,37 +31,42 @@
           </table>
         </b-col>
       </b-row>
+      <b-row>
+        <b-col> {{ stationName }}역 &nbsp; 거리 : {{ stationDistance }} </b-col>
+      </b-row>
       <b-button href="#" variant="primary">Go somewhere</b-button>
     </b-card>
+    ff
   </div>
 </template>
 
 <script>
 export default {
-  props: {
-    aptDetail: { type: Array },
-  },
   data() {
     return {
       sortBy: "dealYear",
       sortDesc: false,
       apt: [],
       station: [],
+      stationDistance: 0,
     };
   },
   created() {},
-  mounted() {
-    this.subway();
-  },
+  mounted() {},
+  watch: {},
   computed: {
+    aptDetail() {
+      return this.$store.state.aptDetail;
+    },
     subwayCoords() {
       return this.$store.state.subwayCoords;
     },
-  },
-  watch: {},
-  updated() {
-    this.subway();
-    console.log("업데이트 가능?");
+    stationName() {
+      console.log("computed");
+      this.subway();
+      console.log(this.station.tname);
+      return this.station.tname;
+    },
   },
   methods: {
     //좌표 계산 함수
@@ -85,7 +90,7 @@ export default {
     },
     subway() {
       this.apt = this.aptDetail;
-      console.log("복사됐나????", this.apt);
+      // console.log("복사됐나????", this.apt);
 
       let min = 2;
 
@@ -113,7 +118,9 @@ export default {
         }
       });
       console.log("거리" + min);
+      this.stationDistance = min;
       console.log("역", this.station);
+      // this.stationName = this.station.stationName;
     },
   },
 };

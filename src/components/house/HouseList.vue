@@ -144,7 +144,7 @@
     </div>
 
     <template v-if="this.aptDetail.length > 0">
-      <house-detail :aptDetail="this.aptDetail"></house-detail>
+      <house-detail></house-detail>
     </template>
   </div>
 </template>
@@ -170,7 +170,7 @@ export default {
       aptLists: [],
       src: [],
       aptCode: 0,
-      aptDetail: [],
+      // aptDetail: [],
     };
   },
   created() {
@@ -217,6 +217,9 @@ export default {
     },
     subwayLists() {
       return this.$store.state.subwayLists;
+    },
+    aptDetail() {
+      return this.$store.state.aptDetail;
     },
   },
   methods: {
@@ -443,8 +446,8 @@ export default {
       const zoomControl = new kakao.maps.ZoomControl();
       this.map.addControl(zoomControl, kakao.maps.ControlPosition.LEFT);
 
-      console.log("주소 변환 시작하는 부분");
-      console.log("지하철 리스트 들어왔나?", this.subwayLists);
+      // console.log("주소 변환 시작하는 부분");
+      // console.log("지하철 리스트 들어왔나?", this.subwayLists);
 
       this.geocode();
     },
@@ -480,7 +483,7 @@ export default {
         });
       });
 
-      console.log("주소 변환 잘 됐나??", arr);
+      // console.log("주소 변환 잘 됐나??", arr);
       this.startGeocode(arr);
     },
     startGeocode(arr) {
@@ -507,12 +510,6 @@ export default {
           image: markerImage, // 마커 이미지
         });
 
-        // 인포윈도우를 생성합니다
-        // const infowindow = new kakao.maps.InfoWindow({
-        //   position: new kakao.maps.LatLng(item.lat, item.lng),
-        //   content: `<div class="window">${item.dealAmount.trim()}</div>`,
-        // });
-
         var customOverlay = new kakao.maps.CustomOverlay({
           position: new kakao.maps.LatLng(item.lat, item.lng),
           content: `<div class="window" style="background: #fb752d;border-radius: 10px;font-weight: 500;color: #fff;padding:10px;">${item.min} ~ ${item.max}</div>`,
@@ -521,7 +518,6 @@ export default {
         });
 
         // 마커 위에 인포윈도우를 표시합니다. 두번째 파라미터인 marker를 넣어주지 않으면 지도 위에 표시됩니다
-        // customOverlay.open(this.map, marker);
         customOverlay.setMap(this.map);
 
         this.markers.push(marker);
@@ -531,10 +527,7 @@ export default {
       this.map.setCenter(new kakao.maps.LatLng(position.lat, position.lng));
     },
     clickDetail(aptCode) {
-      http.get("/housedeal/detail/" + aptCode).then(({ data }) => {
-        console.log(data);
-        this.aptDetail = data;
-      });
+      this.$store.dispatch("getHouseDetail", aptCode);
     },
   },
   filters: {

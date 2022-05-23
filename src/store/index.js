@@ -13,6 +13,7 @@ export default new Vuex.Store({
     dong: [],
     subwayLists: [],
     subwayCoords: [],
+    aptDetail: [],
   },
   getters: {},
   mutations: {
@@ -30,6 +31,9 @@ export default new Vuex.Store({
     },
     GET_SUBWAY_COORDS_LIST(state, payload) {
       state.subwayCoords = payload;
+    },
+    GET_HOUSE_DETAIL(state, payload) {
+      state.aptDetail = payload;
     },
   },
   actions: {
@@ -57,6 +61,12 @@ export default new Vuex.Store({
     getSubwayCoordsList({ commit }, arr) {
       console.log("주소 변환 들어옴", arr);
       commit("GET_SUBWAY_COORDS_LIST", arr);
+    },
+    getHouseDetail({ commit }, aptCode) {
+      http.get("/housedeal/detail/" + aptCode).then(({ data }) => {
+        console.log(data);
+        commit("GET_HOUSE_DETAIL", data);
+      });
     },
   },
   modules: {
