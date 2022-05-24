@@ -12,21 +12,28 @@
             style="background-color: transparent; border: none"
             ><b-icon
               icon="exclamation-circle-fill"
-              variant="success"
-              v-b-toggle.my-collapse
+              variant="info"
+              scale="1"
+              v-b-toggle.my-collapse2
             ></b-icon
           ></b-button>
         </div>
       </b-row>
-      <b-row>
+      <b-row class="text-center mb-3">
         <b-col>
           <div class="img_box">
             <img src="@/assets/aptimg/apt1.jpg" alt="img" />
           </div>
-          <b-card-text>{{ aptDetail[0].buildYear }}</b-card-text>
+          <b-card-text>준공년도 : {{ aptDetail[0].buildYear }}</b-card-text>
         </b-col>
         <b-col>
-          <table>
+          <table class="notice-list">
+            <colgroup>
+              <col style="width: 25%" />
+              <col style="width: 30%" />
+              <col style="width: 25%" />
+              <col style="width: 20%" />
+            </colgroup>
             <tr>
               <th>거래일</th>
               <th>거래가격(만원)</th>
@@ -44,24 +51,62 @@
           </table>
         </b-col>
       </b-row>
-      <b-row>
-        <b-col> {{ stationName }}역 &nbsp; 거리 : {{ stationDistance }} </b-col>
-      </b-row>
-      <b-row>
-        <table>
-          <tr>
-            <th>공원</th>
-          </tr>
-          <tr v-for="(item, index) in parks" :key="index">
-            <td>
-              {{ item.pname }}
-            </td>
-          </tr>
-        </table>
-      </b-row>
 
-      <b-collapse id="my-collapse">
-        <b-card title="Collapsible card"> <div id="mapDetail"></div> </b-card>
+      <b-collapse id="my-collapse2">
+        <b-card title="상세보기">
+          <b-row>
+            <b-col sm="7" ro><div id="mapDetail"></div> </b-col>
+            <b-col sm="5">
+              <b-row align-h="start">
+                <h3>지하철 정보</h3>
+              </b-row>
+              <b-row align-h="start">
+                <template v-if="stationDistance < 2000">
+                  <div>
+                    {{ stationName }}역 &nbsp; 거리 :
+                    {{ stationDistance | numberFormat }}m (
+                  </div>
+                  <div v-if="stationDistance < 500">약 5분 소요)</div>
+                  <div v-else-if="stationDistance < 1000">약 10분 소요)</div>
+                  <div v-else>약 15분 소요)</div>
+                </template>
+                <div v-else>지하철 정보를 업데이트 중입니다.</div>
+              </b-row>
+              <br />
+              <br />
+              <b-row align-h="start">
+                <h3>헬스장 정보</h3>
+              </b-row>
+              <b-row align-h="start">
+                <div>
+                  헬스장 : {{ neargym.sname }} &nbsp; 거리 :
+                  {{ neargym.sdistance | gymnumberFormat }}m (
+                </div>
+                <div v-if="neargym.sdistance < 0.5">약 5분 소요)</div>
+                <div v-else-if="neargym.sdistance < 0.1">약 10분 소요)</div>
+                <div v-else>약 15분 소요)</div>
+              </b-row>
+              <br />
+              <br />
+              <b-row align-h="start">
+                <h3>공원 정보</h3>
+              </b-row>
+              <b-row align-h="start">
+                <div v-for="(item, index) in parks" :key="index">
+                  {{ item.pname }} ,
+                </div>
+              </b-row>
+              <br />
+              <br />
+              <b-row>
+                <h3>미세먼지 정보</h3>
+              </b-row>
+              <b-row>
+                <b-col><dust-chart :gugunairlist="gugunairlist" /></b-col>
+              </b-row>
+            </b-col>
+          </b-row>
+        </b-card>
       </b-collapse>
     </b-card>
     <div style="display: none">
@@ -73,6 +118,7 @@
 
 <script>
 import http from "@/api/http";
+import DustChart from "@/components/house/DustChart.vue";
 
 export default {
   data() {
@@ -85,7 +131,11 @@ export default {
       air: [],
       parks: [],
       mapDetail: null,
+      gugunairlist: [],
     };
+  },
+  components: {
+    DustChart,
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -109,7 +159,7 @@ export default {
       return this.$store.state.gymlist;
     },
     neargym() {
-      return this.$store.state.neargym;
+      return this.$store.state.neargymList;
     },
     subwayCoords() {
       return this.$store.state.subwayCoords;
@@ -165,7 +215,8 @@ export default {
     },
     gugunair() {
       http.get("/air/" + this.aptDetail[0].dongCode).then((resp) => {
-        console.log(resp);
+        console.log("미세먼지", resp.data);
+        this.gugunairlist = resp.data.results;
       });
     },
     subway() {
@@ -191,7 +242,7 @@ export default {
           this.station = item;
         }
       });
-      this.stationDistance = min;
+      this.stationDistance = min * 1000;
     },
     // 카카오 지도 맵 생성
     initMap() {
@@ -223,10 +274,47 @@ export default {
       marker.setMap(this.mapDetail);
     },
   },
+  filters: {
+    numberFormat: (value, numFix) => {
+      value = parseFloat(value);
+      if (!value) return "0";
+      return value.toFixed(numFix);
+    },
+    gymnumberFormat: (value, numFix) => {
+      value = parseFloat(value) * 1000;
+      if (!value) return "0";
+      return value.toFixed(numFix);
+    },
+  },
 };
 </script>
 
 <style scoped>
+.notice-list {
+  width: 100%;
+  margin: auto;
+}
+.notice-list th {
+  font-size: 18px;
+}
+.notice-list tr {
+  font-size: 17px;
+  height: 25px;
+  border-bottom: 1px solid #9c9c9c;
+}
+.notice-list tr td a {
+  color: #0b8b5c;
+}
+.notice-list tr td a:hover {
+  color: #086442;
+}
+
+/* 페이지네이션 */
+.page-item.active .page-link {
+  background-color: #0b8b5c !important;
+  border-color: #0b8b5c !important;
+}
+
 #mapDetail {
   width: 100%;
   height: 600px;
@@ -256,6 +344,6 @@ table {
   margin-bottom: 20px;
 }
 .img_box img {
-  width: 60%;
+  width: 90%;
 }
 </style>
