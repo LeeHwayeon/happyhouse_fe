@@ -47,7 +47,6 @@
         <b-button id="search_btn" variant="success" @click="search"
           >검색</b-button
         >
-        {{ gymProgress }} / {{ gymComplete }}
       </b-col>
     </b-row>
 
@@ -190,10 +189,10 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch("getSido");
+    this.$store.dispatch("initHouseDetail");
     this.$store.dispatch("getSubwayList");
+    this.$store.dispatch("getSido");
 
-    //랜덤 숫자 만들어서 이미지 출력하게
     for (let i = 0; i < 10; i++) {
       let randomNumber = Math.floor(Math.random() * 9) + 1;
       this.src.push(randomNumber);
@@ -229,8 +228,46 @@ export default {
     aptDetail() {
       return this.$store.state.aptDetail;
     },
+    subwayLists() {
+      return this.$store.state.subwayLists;
+    },
   },
   methods: {
+    geocodeSubway() {
+      // 주소-좌표 변환 객체를 생성합니다
+      const geocoder = new kakao.maps.services.Geocoder();
+
+      const arr = new Array();
+      this.subwayLists.forEach((item) => {
+        const str = item.tjibun;
+        const endIndex = str.indexOf("(");
+        const newAddress = str.substring(0, endIndex);
+        const splitNewAddress = newAddress.split(" ");
+
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch(newAddress, function (result, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === kakao.maps.services.Status.OK) {
+            const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            arr.push({
+              tline: item.tline,
+              tname: item.tname,
+              tsidoName: splitNewAddress[0],
+              tgugunName: splitNewAddress[1],
+              tdongName: splitNewAddress[2],
+              tlng: coords.La,
+              tlat: coords.Ma,
+            });
+          }
+        });
+      });
+
+      this.startGeocode(arr);
+    },
+    startGeocode(arr) {
+      this.$store.dispatch("getSubwayCoordsList", arr);
+    },
     getDistanceFromLatLonInKm(lat1, lng1, lat2, lng2) {
       function deg2rad(deg) {
         return deg * (Math.PI / 180);
@@ -444,6 +481,8 @@ export default {
       // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
       const zoomControl = new kakao.maps.ZoomControl();
       this.map.addControl(zoomControl, kakao.maps.ControlPosition.LEFT);
+
+      this.geocodeSubway();
     },
     displayMarkers() {
       const imageSrc = require("@/assets/building.png"); //마커 이미지
@@ -490,8 +529,6 @@ export default {
       let min = 1;
 
       http.get("/gym/" + dong).then(({ data }) => {
-        console.log("axio 데이터", data);
-        console.log("데이터 갯수" + data.length);
         _this.gymComplete = data.length;
         for (let i = 0; i < data.length; i++) {
           geocoder.addressSearch(data[i].sjibun, function (result, status) {

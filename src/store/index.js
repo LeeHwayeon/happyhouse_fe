@@ -43,6 +43,9 @@ export default new Vuex.Store({
       state.gymList = payload.arr;
       state.neargymList = payload.minGym;
     },
+    INIT_HOUSE_DETAIL(state) {
+      state.aptDetail = [];
+    },
   },
   actions: {
     getSido({ commit }) {
@@ -78,6 +81,9 @@ export default new Vuex.Store({
     getGymList({ commit }, data) {
       console.log("list 찍어보자", data);
       commit("GET_GYM_LIST", data);
+    },
+    initHouseDetail({ commit }) {
+      commit("INIT_HOUSE_DETAIL");
     },
   },
   modules: {

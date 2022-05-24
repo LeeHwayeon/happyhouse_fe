@@ -37,7 +37,6 @@
       <b-button href="#" variant="primary">Go somewhere</b-button>
     </b-card>
     {{ parklist }}
-    <!-- {{ gymList }} -->
   </div>
 </template>
 
@@ -52,20 +51,7 @@ export default {
       apt: [],
       station: [],
       stationDistance: 0,
-      test: [],
-      // minGym: [
-      //   {
-      //     sdoro: "",
-      //     sjibun: "",
-      //     sname: "",
-      //     sopen: "",
-      //     swork: "",
-      //     slat: "",
-      //     slng: "",
-      //     sdistance: "",
-      //   },
-      // ],
-      // gymLists: [],
+      air: [],
     };
   },
   mounted() {
@@ -82,6 +68,12 @@ export default {
     aptDetail() {
       return this.$store.state.aptDetail;
     },
+    gymlist() {
+      return this.$store.state.gymlist;
+    },
+    neargym() {
+      return this.$store.state.neargym;
+    },
     subwayCoords() {
       return this.$store.state.subwayCoords;
     },
@@ -93,11 +85,10 @@ export default {
       this.getpark();
       return 0;
     },
-    // gymList() {
-    //   console.log("여영ㅇ여여여영");
-    //   this.getGym();
-    //   return 0;
-    // },
+    gugunAir() {
+      this.gugunair();
+      return 0;
+    },
   },
   methods: {
     //좌표 계산 함수
@@ -105,8 +96,8 @@ export default {
       function deg2rad(deg) {
         return deg * (Math.PI / 180);
       }
-      var R = 6371; // Radius of the earth in km
-      var dLat = deg2rad(lat2 - lat1); // deg2rad below
+      var R = 6371;
+      var dLat = deg2rad(lat2 - lat1);
       var dLon = deg2rad(lng2 - lng1);
       var a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -115,7 +106,7 @@ export default {
           Math.sin(dLon / 2) *
           Math.sin(dLon / 2);
       var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c; // Distance in km
+      var d = R * c;
 
       return d;
     },
@@ -130,78 +121,21 @@ export default {
             "/lng/" +
             this.aptDetail[0].lng
         )
-        .then(() => {
-          // console.log(resp);
-        });
+        .then(() => {});
     },
-    // getGym() {
-    // console.log("초기화됨??", this.gymLists);
-    // let _this = this;
-    // const geocoder = new kakao.maps.services.Geocoder();
-    // http.get("/gym/" + this.apt[0].dong).then(({ data }) => {
-    //   console.log("axio 데이터", data);
-    //   let list = new Array();
-    //   let min = 1; // 거리 비교용 min
-    //   console.log("min", min);
-    //   console.log("데이터 갯수" + data.length);
-    //   for (let i = 0; i < data.length; i++) {
-    //     geocoder.addressSearch(data[i].sjibun, function (result, status) {
-    //       // 정상적으로 검색이 완료됐으면
-    //       if (status === kakao.maps.services.Status.OK) {
-    //         let coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-    //         //거리 비교
-    //         if (
-    //           _this.getDistanceFromLatLonInKm(
-    //             coords.Ma,
-    //             coords.La,
-    //             _this.aptDetail[0].lat,
-    //             _this.aptDetail[0].lng
-    //           ) < min
-    //         ) {
-    //           min = _this.getDistanceFromLatLonInKm(
-    //             coords.Ma,
-    //             coords.La,
-    //             _this.aptDetail[0].lat,
-    //             _this.aptDetail[0].lng
-    //           );
-    //           _this.minGym = data[i];
-    //           _this.minGym.sdistance = min;
-    //         }
-    //         if (
-    //           _this.getDistanceFromLatLonInKm(
-    //             coords.Ma,
-    //             coords.La,
-    //             _this.aptDetail[0].lat,
-    //             _this.aptDetail[0].lng
-    //           ) < 1
-    //         ) {
-    //           console.log("내부", _this.gymLists);
-    //           list.push(data[i]);
-    //         }
-    //         //
-    //       }
-    //     });
-    //   }
-    //   this.gymLists = list;
-    //   console.log("this 데이터");
-    //   console.log(this.minGym);
-    //   console.log(this.minGym.sdistance);
-    //   console.log(this.gymLists);
-    // });
-    // },
+
+    gugunair() {
+      http.get("/air/" + this.aptDetail[0].dongCode).then((resp) => {
+        console.log(resp);
+      });
+    },
 
     subway() {
       this.apt = this.aptDetail;
-      // console.log("복사됐나????", this.apt);
-
+      console.log(this.apt);
       let min = 2;
 
       this.subwayCoords.forEach((item) => {
-        // console.log(this.apt[0].lat);
-        // console.log(this.apt[0].lng);
-        // console.log(item.tlat);
-        // console.log(item.tlng);
-
         if (
           this.getDistanceFromLatLonInKm(
             this.apt[0].lat,
@@ -219,10 +153,7 @@ export default {
           this.station = item;
         }
       });
-      // console.log("거리" + min);
       this.stationDistance = min;
-      // console.log("역", this.station);
-      // this.stationName = this.station.stationName;
     },
   },
 };
