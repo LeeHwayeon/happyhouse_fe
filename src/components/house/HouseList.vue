@@ -120,8 +120,6 @@
             </b-col>
             <b-col cols="6">
               <b-card-title>{{ apt.dealAmount }}</b-card-title>
-              <b-card-title>{{ apt.aptCode }}</b-card-title>
-              <b-card-title>{{ apt.dong }}</b-card-title>
               <b-card-text>
                 {{ apt.apartmentName }}
               </b-card-text>
@@ -161,6 +159,7 @@ export default {
     return {
       page: 1,
       p: 1,
+      nowPage: 0,
       buildyear: "2000",
       aptprice: 0,
       selectedSido: "",
@@ -199,9 +198,11 @@ export default {
       let randomNumber = Math.floor(Math.random() * 9) + 1;
       this.src.push(randomNumber);
     }
-    if (this.$route.query.p != undefined) {
-      this.search();
-    }
+    console.log(this.$route.query.p);
+
+    // if (this.$route.query.p != undefined) {
+    //   this.search();
+    // }
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -235,6 +236,10 @@ export default {
     },
   },
   methods: {
+    checkPage() {
+      this.nowPage = this.$route.query.p;
+      this.search();
+    },
     geocodeSubway() {
       // 주소-좌표 변환 객체를 생성합니다
       const geocoder = new kakao.maps.services.Geocoder();
@@ -435,18 +440,16 @@ export default {
             this.getLists();
           });
       }
-      console.log("아파트 리스트");
-      console.log(this.aptLists);
     },
     getLists() {
-      this.markers.forEach((item) => {
-        item.setMap(null);
-      });
-      const arr = document.getElementsByClassName("window");
+      // this.markers.forEach((item) => {
+      //   item.setMap(null);
+      // });
+      // const arr = document.getElementsByClassName("window");
 
-      for (let i = 0; i < arr.length; i++) {
-        arr[i].remove();
-      }
+      // for (let i = 0; i < arr.length; i++) {
+      //   arr[i].remove();
+      // }
 
       if (this.aptLists.length == 0) {
         this.$swal({ icon: "error", title: "검색 결과가 없습니다!" });
@@ -519,8 +522,6 @@ export default {
       this.map.setCenter(new kakao.maps.LatLng(position.lat, position.lng));
     },
     clickDetail(aptCode, dong) {
-      console.log("aptCode" + aptCode);
-      console.log("dong" + dong);
       this.$store.dispatch("getHouseDetail", aptCode);
 
       const geocoder = new kakao.maps.services.Geocoder();
@@ -582,9 +583,6 @@ export default {
               }
             }
           });
-          console.log(arr);
-          console.log(_this.minGym);
-          console.log(list);
         } // end for
         _this.allList = { arr, minGym: _this.minGym, list };
       });
@@ -599,8 +597,6 @@ export default {
   watch: {
     gymProgress() {
       if (this.gymComplete == this.gymProgress) {
-        console.log("before", this.allList);
-
         this.$store.dispatch("getGymList", {
           list: this.list,
           arr: this.arr,
@@ -608,6 +604,7 @@ export default {
         });
       }
     },
+    checkPage() {},
   },
 };
 </script>

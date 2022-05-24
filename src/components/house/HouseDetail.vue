@@ -30,13 +30,28 @@
             </tr>
           </table>
         </b-col>
+        <b-col>
+          <table>
+            <tr>
+              <th>공원</th>
+            </tr>
+            <tr v-for="(item, index) in parks" :key="index">
+              <td>
+                {{ item.pname }}
+              </td>
+            </tr>
+          </table>
+        </b-col>
       </b-row>
       <b-row>
         <b-col> {{ stationName }}역 &nbsp; 거리 : {{ stationDistance }} </b-col>
       </b-row>
       <b-button href="#" variant="primary">Go somewhere</b-button>
     </b-card>
-    {{ parklist }}
+    <div style="display: none">
+      {{ parklist }}
+      {{ gugunAir }}
+    </div>
   </div>
 </template>
 
@@ -52,6 +67,7 @@ export default {
       station: [],
       stationDistance: 0,
       air: [],
+      parks: [],
     };
   },
   mounted() {
@@ -110,7 +126,6 @@ export default {
 
       return d;
     },
-
     getpark() {
       http
         .get(
@@ -121,15 +136,17 @@ export default {
             "/lng/" +
             this.aptDetail[0].lng
         )
-        .then(() => {});
-    },
+        .then(({ data }) => {
+          console.log(data);
 
+          this.parks = data;
+        });
+    },
     gugunair() {
       http.get("/air/" + this.aptDetail[0].dongCode).then((resp) => {
         console.log(resp);
       });
     },
-
     subway() {
       this.apt = this.aptDetail;
       console.log(this.apt);
