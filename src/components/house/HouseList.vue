@@ -198,11 +198,10 @@ export default {
       let randomNumber = Math.floor(Math.random() * 9) + 1;
       this.src.push(randomNumber);
     }
-    console.log(this.$route.query.p);
 
-    // if (this.$route.query.p != undefined) {
-    //   this.search();
-    // }
+    if (this.$route.query.p != undefined) {
+      this.search();
+    }
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -236,10 +235,6 @@ export default {
     },
   },
   methods: {
-    checkPage() {
-      this.nowPage = this.$route.query.p;
-      this.search();
-    },
     geocodeSubway() {
       // 주소-좌표 변환 객체를 생성합니다
       const geocoder = new kakao.maps.services.Geocoder();
@@ -442,14 +437,14 @@ export default {
       }
     },
     getLists() {
-      // this.markers.forEach((item) => {
-      //   item.setMap(null);
-      // });
-      // const arr = document.getElementsByClassName("window");
+      this.markers.forEach((item) => {
+        item.setMap(null);
+      });
+      const arr = document.getElementsByClassName("window");
 
-      // for (let i = 0; i < arr.length; i++) {
-      //   arr[i].remove();
-      // }
+      for (let i = 0; i < arr.length; i++) {
+        arr[i].remove();
+      }
 
       if (this.aptLists.length == 0) {
         this.$swal({ icon: "error", title: "검색 결과가 없습니다!" });
@@ -604,7 +599,6 @@ export default {
         });
       }
     },
-    checkPage() {},
   },
 };
 </script>
