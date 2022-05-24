@@ -298,6 +298,7 @@ export default {
       this.$store.dispatch("getDong", this.selectedGu);
     },
     search() {
+      this.getDust();
       this.p = this.$route.query.p != undefined ? this.$route.query.p : 1;
 
       this.selectedSido =
@@ -580,6 +581,12 @@ export default {
           });
         } // end for
         _this.allList = { arr, minGym: _this.minGym, list };
+      });
+    },
+    //미세먼지 정보 가져오는 함수
+    getDust() {
+      http.get("/air/" + this.selectedGu).then((resp) => {
+        this.$store.dispatch("getDust", resp.data);
       });
     },
   },

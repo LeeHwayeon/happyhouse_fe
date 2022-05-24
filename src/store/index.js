@@ -17,6 +17,8 @@ export default new Vuex.Store({
     gymList: [],
     neargym: [],
     neargymList: [],
+    dustList: [],
+    dustRank: "",
   },
   getters: {},
   mutations: {
@@ -45,6 +47,13 @@ export default new Vuex.Store({
     },
     INIT_HOUSE_DETAIL(state) {
       state.aptDetail = [];
+    },
+    GET_DUST(state, payload) {
+      state.dustList = [];
+      payload.results.forEach((item) => {
+        state.dustList.push(item.adust);
+      });
+      state.dustRank = payload.rank;
     },
   },
   actions: {
@@ -84,6 +93,9 @@ export default new Vuex.Store({
     },
     initHouseDetail({ commit }) {
       commit("INIT_HOUSE_DETAIL");
+    },
+    getDust({ commit }, data) {
+      commit("GET_DUST", data);
     },
   },
   modules: {

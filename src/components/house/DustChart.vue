@@ -12,7 +12,7 @@
       :height="height"
     />
     <div style="display: none">
-      {{ gugunair }}
+      {{ air }}
     </div>
   </div>
 </template>
@@ -61,7 +61,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 400,
+      default: 250,
     },
     cssClasses: {
       default: "",
@@ -80,7 +80,6 @@ export default {
     return {
       chartData: {
         labels: ["2015", "2016", "2017", "2018", "2019", "2020"],
-        pros: ["gugunairlist"],
         datasets: [
           {
             label: "미세먼지",
@@ -93,29 +92,31 @@ export default {
         responsive: true,
         maintainAspectRatio: false,
       },
+      options: {
+        responsive: false,
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+              },
+            },
+          ],
+        },
+      },
     };
   },
+  created() {},
   computed: {
-    gugunair() {
-      console.log("미세먼지 표");
-      console.log(this.gugunairlist);
-      // for (let index = 0; index < 6; index++) {
-      //   console.log(this.gugunairlist[index]);
-      //   this.chartData.datasets[0].data.push(this.gugunairlist[index].adust);
-      // }
+    air() {
+      this.getDust();
       return 0;
     },
   },
-  options: {
-    responsive: false,
-    scales: {
-      yAxes: [
-        {
-          ticks: {
-            beginAtZero: true,
-          },
-        },
-      ],
+  methods: {
+    getDust() {
+      const arr = this.$store.state.dustList;
+      this.chartData.datasets[0].data = arr;
     },
   },
 };

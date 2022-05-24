@@ -78,13 +78,18 @@
                 <h3>헬스장 정보</h3>
               </b-row>
               <b-row align-h="start">
-                <div>
-                  헬스장 : {{ neargym.sname }} &nbsp; 거리 :
-                  {{ neargym.sdistance | gymnumberFormat }}m (
-                </div>
-                <div v-if="neargym.sdistance < 0.5">약 5분 소요)</div>
-                <div v-else-if="neargym.sdistance < 0.1">약 10분 소요)</div>
-                <div v-else>약 15분 소요)</div>
+                <template v-if="neargym.length == 0">
+                  <div>1km 이내에 헬스장 정보가 없습니다.</div>
+                </template>
+                <template v-else>
+                  <div>
+                    헬스장 : {{ neargym.sname }} &nbsp; 거리 :
+                    {{ neargym.sdistance | gymnumberFormat }}m (
+                  </div>
+                  <div v-if="neargym.sdistance < 0.05">약 5분 소요)</div>
+                  <div v-else-if="neargym.sdistance < 0.1">약 10분 소요)</div>
+                  <div v-else>약 15분 소요)</div>
+                </template>
               </b-row>
               <br />
               <br />
@@ -93,7 +98,10 @@
               </b-row>
               <b-row align-h="start">
                 <div v-for="(item, index) in parks" :key="index">
-                  {{ item.pname }} ,
+                  <span v-if="index + 1 == parks.length">
+                    {{ item.pname }}
+                  </span>
+                  <span v-else> {{ item.pname }}, </span>
                 </div>
               </b-row>
               <br />
@@ -102,7 +110,7 @@
                 <h3>미세먼지 정보</h3>
               </b-row>
               <b-row>
-                <b-col><dust-chart :gugunairlist="gugunairlist" /></b-col>
+                <b-col><dust-chart /></b-col>
               </b-row>
             </b-col>
           </b-row>
@@ -111,7 +119,6 @@
     </b-card>
     <div style="display: none">
       {{ parklist }}
-      {{ gugunAir }}
     </div>
   </div>
 </template>
@@ -131,7 +138,6 @@ export default {
       air: [],
       parks: [],
       mapDetail: null,
-      gugunairlist: [],
     };
   },
   components: {
@@ -172,10 +178,6 @@ export default {
       this.getpark();
       return 0;
     },
-    gugunAir() {
-      this.gugunair();
-      return 0;
-    },
   },
   methods: {
     //좌표 계산 함수
@@ -212,12 +214,6 @@ export default {
 
           this.parks = data;
         });
-    },
-    gugunair() {
-      http.get("/air/" + this.aptDetail[0].dongCode).then((resp) => {
-        console.log("미세먼지", resp.data);
-        this.gugunairlist = resp.data.results;
-      });
     },
     subway() {
       this.apt = this.aptDetail;
