@@ -120,6 +120,8 @@
             </b-col>
             <b-col cols="6">
               <b-card-title>{{ apt.dealAmount }}</b-card-title>
+              <b-card-title>{{ apt.aptCode }}</b-card-title>
+              <b-card-title>{{ apt.dong }}</b-card-title>
               <b-card-text>
                 {{ apt.apartmentName }}
               </b-card-text>
@@ -433,6 +435,8 @@ export default {
             this.getLists();
           });
       }
+      console.log("아파트 리스트");
+      console.log(this.aptLists);
     },
     getLists() {
       this.markers.forEach((item) => {
@@ -515,6 +519,8 @@ export default {
       this.map.setCenter(new kakao.maps.LatLng(position.lat, position.lng));
     },
     clickDetail(aptCode, dong) {
+      console.log("aptCode" + aptCode);
+      console.log("dong" + dong);
       this.$store.dispatch("getHouseDetail", aptCode);
 
       const geocoder = new kakao.maps.services.Geocoder();
@@ -576,6 +582,9 @@ export default {
               }
             }
           });
+          console.log(arr);
+          console.log(_this.minGym);
+          console.log(list);
         } // end for
         _this.allList = { arr, minGym: _this.minGym, list };
       });

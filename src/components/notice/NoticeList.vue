@@ -93,6 +93,7 @@ export default {
     };
   },
   created() {
+    // this.$store.dispatch("initHouseDetail");
     let keyword = this.$route.query.keyword;
 
     if (this.keyword == "" && keyword == undefined) this.getList();

@@ -120,8 +120,6 @@ export default {
         this.chartData.labels.push(
           item.sidoName + " " + item.gugunName + " " + item.dongName
         );
-        console.log(this.chartData.datasets);
-
         this.chartData.datasets[0].data.push(item.count);
       });
     });

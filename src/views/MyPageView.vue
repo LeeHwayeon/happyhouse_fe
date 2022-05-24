@@ -81,6 +81,9 @@ export default {
       },
     };
   },
+  created() {
+    // this.$store.dispatch("initHouseDetail");
+  },
   computed: {
     ...mapState("userStore", ["isLogin", "userInfo"]),
   },

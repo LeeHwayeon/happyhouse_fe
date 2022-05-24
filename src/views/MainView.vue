@@ -22,6 +22,9 @@ export default {
     SliderView,
     DealChart,
   },
+  created() {
+    // this.$store.dispatch("initHouseDetail");
+  },
 };
 </script>
 
