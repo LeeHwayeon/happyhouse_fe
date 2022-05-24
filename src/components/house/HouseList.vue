@@ -119,7 +119,7 @@
               />
             </b-col>
             <b-col cols="6">
-              <b-card-title>{{ apt.dealAmount }}</b-card-title>
+              <b-card-title>{{ apt.dealAmount | pricename }}</b-card-title>
               <b-card-text>
                 {{ apt.apartmentName }}
               </b-card-text>
@@ -501,9 +501,11 @@ export default {
           image: markerImage, // 마커 이미지
         });
 
+        let min = Math.round((item.min / 10000) * 100, 2) / 100 + "억";
+        let max = Math.round((item.max / 10000) * 100, 2) / 100 + "억";
         var customOverlay = new kakao.maps.CustomOverlay({
           position: new kakao.maps.LatLng(item.lat, item.lng),
-          content: `<div class="window" style="background: #fb752d;border-radius: 10px;font-weight: 500;color: #fff;padding:10px;">${item.min} ~ ${item.max}</div>`,
+          content: `<div class="window" style="background: #fc5f67;border-radius: 10px;font-weight: 500;color: #fff;padding: 5px 5px 3px 5px;font-size:13px"><span style="font-weight: 700;font-size:15px">${min}</span><br/>~${max}</div>`,
           xAnchor: 0.5,
           yAnchor: 2.1,
         });
@@ -591,9 +593,15 @@ export default {
     },
   },
   filters: {
-    setDealAmount: function (value) {
-      value.replace(/,/g, ""); //콤마제거후
-      // if(value.)
+    pricename: function (value) {
+      const temp = (String(value).replace(",", "") / 10000) * 100;
+      if (temp / 100 >= 1) {
+        let result = temp / 100 + "억";
+        return result;
+      } else if (temp / 100 < 1) {
+        let result = temp * 100 + "만원";
+        return result;
+      }
     },
   },
   watch: {

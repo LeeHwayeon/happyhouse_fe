@@ -43,12 +43,14 @@
           </div>
         </div>
         <!-- join_form E  -->
-        <div class="btn_wrap mt-3 mb-0">
+        <div class="btn_wrap mt-5 mb-0">
           <b-button pill variant="success" @click="login()">로그인</b-button>
         </div>
-        <div class="exform_txt">
+        <div class="exform_txt mt-2 mb-2">
           <router-link to="/search"
-            ><span style="color: gray" class="mt-0"
+            ><span
+              style="color: gray; text-weight: bold; font-size: 17px"
+              class="mt-0"
               >Forgot your password?</span
             ></router-link
           ><br />
@@ -99,6 +101,10 @@ export default {
 </script>
 
 <style scoped>
+.wrap {
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
 .join_form table th span:after {
   content: "";
   font-size: 13px;
@@ -113,6 +119,7 @@ export default {
   text-align: center;
   color: #9a9a9a;
   font-size: 13px;
+  border: 0;
 }
 .exform_txt span {
   display: inline-block;
@@ -127,5 +134,9 @@ export default {
   color: #f95427;
   font-size: 13px;
   font-weight: bold;
+}
+.btn_wrap {
+  padding-top: 30px;
+  border-top: 1px solid #ececec;
 }
 </style>

@@ -199,6 +199,7 @@ export default {
 
       return d;
     },
+    //공원 가져오기
     getpark() {
       http
         .get(

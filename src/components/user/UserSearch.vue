@@ -90,4 +90,13 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.card,
+.button {
+  width: 60%;
+  margin: auto;
+}
+.card-body {
+  margin: 20px;
+}
+</style>

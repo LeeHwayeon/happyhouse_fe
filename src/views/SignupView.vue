@@ -187,7 +187,7 @@
         <!-- join_form E  -->
 
         <div class="btn_wrap">
-          <b-button pill variant="primary" @click="check">회원가입</b-button>
+          <b-button pill variant="success" @click="check">회원가입</b-button>
         </div>
       </div>
       <!-- form_txtInput E -->
@@ -436,9 +436,9 @@ ul {
   width: 100%;
 }
 .sub_tit_txt {
-  margin: 80px 0 20px 20px;
+  margin: 80px 0 40px 20px;
   color: #2f2f2f;
-  font-size: 25px;
+  font-size: 30px;
 }
 .wrap.wd668.line .sub_tit_txt {
   margin: 0px 0 20px 20px;
@@ -467,9 +467,10 @@ ul {
 }
 .btn_wrap {
   text-align: center;
-  margin: 40px 0 30px;
+  margin: 40px 0 40px;
 }
 .btn_wrap a {
+  border-top: 1px solid #ececec;
   color: #fff;
   background-color: #4380ce;
   font-weight: bold;

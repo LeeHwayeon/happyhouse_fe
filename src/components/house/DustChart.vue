@@ -115,6 +115,7 @@ export default {
   },
   methods: {
     getDust() {
+      //미세먼지
       const arr = this.$store.state.dustList;
       this.chartData.datasets[0].data = arr;
     },
