@@ -193,14 +193,9 @@ export default {
       let randomNumber = Math.floor(Math.random() * 9) + 1;
       this.src.push(randomNumber);
     }
-    // console.log(this.src);
-
-    // 지하철 리스트 가져오기
-    this.$store.dispatch("getSubwayList");
 
     if (this.$route.query.p != undefined) {
       this.search();
-      // console.log(this.aptLists);
     }
   },
   mounted() {
@@ -226,9 +221,6 @@ export default {
     },
     gu() {
       return this.$store.state.gu;
-    },
-    subwayLists() {
-      return this.$store.state.subwayLists;
     },
     aptDetail() {
       return this.$store.state.aptDetail;
@@ -297,22 +289,7 @@ export default {
         this.$route.query.name != this.aptName
       ) {
         this.p = 1;
-        console.log("페이지 초가화" + this.p);
       }
-
-      console.log("현재 페이지" + this.p);
-      console.log(this.selectedSido);
-      console.log(this.$route.query.si);
-      console.log(this.selectedGu);
-      console.log(this.$route.query.gu);
-      console.log(this.$route.query.gu != this.selectedGu);
-      console.log(this.selectedDong);
-      console.log(this.$route.query.dong);
-      console.log(this.$route.query.dong != this.selectedDong);
-      console.log(this.aptName);
-      console.log(this.$route.query.name);
-      console.log(this.$route.query.name != this.aptName);
-      console.log("끝");
 
       if (this.selectedSido === "" && this.selectedGu === "") {
         // 입력 안했을 떄
@@ -327,8 +304,6 @@ export default {
         this.selectedDong === "" &&
         this.aptName === ""
       ) {
-        console.log("선택한 시 : " + this.selectedSido);
-        console.log("선택한 구 : " + this.selectedGu);
         http
           .get(
             "/housedeal/sidogugun/" +
@@ -341,7 +316,6 @@ export default {
               this.p
           )
           .then(({ data }) => {
-            console.log(data);
             this.aptLists = data.housedealList; //검색 결과
             this.page = data.totalPage;
 
@@ -354,9 +328,6 @@ export default {
         this.selectedDong !== "" &&
         this.aptName === ""
       ) {
-        console.log("선택한 시 : " + this.selectedSido);
-        console.log("선택한 구 : " + this.selectedGu);
-        console.log("선택한 동 : " + this.selectedDong);
         http
           .get(
             "/housedeal/dong/" +
@@ -370,7 +341,6 @@ export default {
               this.p
           )
           .then(({ data }) => {
-            console.log(data);
             this.aptLists = data.housedealList; //검색 결과
             this.page = data.totalPage;
             this.getLists();
@@ -382,9 +352,6 @@ export default {
         this.selectedDong === "" &&
         this.aptName !== ""
       ) {
-        console.log("선택한 시 : " + this.selectedSido);
-        console.log("선택한 구 : " + this.selectedGu);
-        console.log("아파트 이름 :" + this.aptName);
         http
           .get(
             "/housedeal/guguncode/" +
@@ -399,18 +366,12 @@ export default {
               this.p
           )
           .then(({ data }) => {
-            console.log(data);
             this.aptLists = data.housedealList; //검색 결과
             this.page = data.totalPage;
             this.getLists();
           });
       } else {
         // 시, 구군, 동, 아파트 이름 전부 입력했을 때
-        console.log("선택한 시 :" + this.selectedSido);
-        console.log("선택한 구 :" + this.selectedGu);
-        console.log("선택한 동 :" + this.selectedDong);
-        console.log("아파트 이름 :" + this.aptName);
-
         http
           .get(
             "/housedeal/dongcode/" +
@@ -426,7 +387,6 @@ export default {
               this.p
           )
           .then(({ data }) => {
-            console.log(data);
             this.aptLists = data.housedealList; //검색 결과
             this.page = data.totalPage;
             this.getLists();
@@ -438,7 +398,6 @@ export default {
         item.setMap(null);
       });
       const arr = document.getElementsByClassName("window");
-      console.log(arr.length);
 
       for (let i = 0; i < arr.length; i++) {
         arr[i].remove();
@@ -453,16 +412,13 @@ export default {
         this.displayMarkers(); //마커 표시
         document.getElementsByClassName("search_list")[0].style.display =
           "block"; //리스트 목록 보이게
-        // this.changeImg();
       }
     },
     changeImg() {
       let randomNumber = Math.floor(Math.random() * 9) + 1;
       const imgArr = [...document.querySelectorAll(".img_box img")];
-      console.log(imgArr);
 
       imgArr.forEach((item) => {
-        console.log("item", item);
         item.setAttribute("src", "@/assets/aptimg/apt" + randomNumber + ".jpg");
       });
     },
@@ -479,71 +435,13 @@ export default {
       const mapTypeControl = new kakao.maps.MapTypeControl();
 
       // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
-      // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
       this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPLEFT);
 
       // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
       const zoomControl = new kakao.maps.ZoomControl();
       this.map.addControl(zoomControl, kakao.maps.ControlPosition.LEFT);
-
-      // console.log("주소 변환 시작하는 부분");
-      // console.log("지하철 리스트 들어왔나?", this.subwayLists);
-
-      this.geocode();
-    },
-    geocode() {
-      // 주소-좌표 변환 객체를 생성합니다
-      const geocoder = new kakao.maps.services.Geocoder();
-
-      const arr = new Array();
-      this.subwayLists.forEach((item) => {
-        const str = item.tjibun;
-        const endIndex = str.indexOf("(");
-        const newAddress = str.substring(0, endIndex);
-        const splitNewAddress = newAddress.split(" ");
-        // console.log(item.tname + " " + newAddress);
-
-        // 주소로 좌표를 검색합니다
-        geocoder.addressSearch(newAddress, function (result, status) {
-          // 정상적으로 검색이 완료됐으면
-          if (status === kakao.maps.services.Status.OK) {
-            const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-
-            // console.log(item.tname + " 좌표 : ", coords);
-            arr.push({
-              tline: item.tline,
-              tname: item.tname,
-              tsidoName: splitNewAddress[0],
-              tgugunName: splitNewAddress[1],
-              tdongName: splitNewAddress[2],
-              tlng: coords.La,
-              tlat: coords.Ma,
-            });
-          }
-        });
-      });
-
-      // console.log("주소 변환 잘 됐나??", arr);
-      this.startGeocode(arr);
-    },
-    startGeocode(arr) {
-      this.$store.dispatch("getSubwayCoordsList", arr);
     },
     displayMarkers() {
-      this.markers.forEach((item) => {
-        item.setMap(null);
-      });
-      const arr = document.getElementsByClassName("window");
-      console.log(arr.length);
-
-      for (let i = 0; i < arr.length; i++) {
-        arr[i].remove();
-      }
-      //현재 표시되어 있는 마커들이 있다면 마커에 등록된 map을 없애줌
-      if (this.markers.length > 0) {
-        // document.getElementsByClassName("window").remove();
-      }
-
       const imageSrc = require("@/assets/building.png"); //마커 이미지
       const imageSize = new kakao.maps.Size(43, 43); //마커 이미지 사이즈
       const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); //마커 이미지 생성
