@@ -47,6 +47,7 @@
         <b-button id="search_btn" variant="success" @click="search"
           >검색</b-button
         >
+        {{ gymProgress }} / {{ gymComplete }}
       </b-col>
     </b-row>
 
@@ -151,7 +152,6 @@
 
 <script>
 import http from "@/api/http.js";
-// import axios from "axios";
 import HouseDetail from "@/components/house/HouseDetail.vue";
 
 export default {
@@ -183,17 +183,21 @@ export default {
           sdistance: "",
         },
       ],
+      arr: [],
+      list: [],
+      gymProgress: 0,
+      gymComplete: 0,
     };
   },
   created() {
     this.$store.dispatch("getSido");
+    this.$store.dispatch("getSubwayList");
 
     //랜덤 숫자 만들어서 이미지 출력하게
     for (let i = 0; i < 10; i++) {
       let randomNumber = Math.floor(Math.random() * 9) + 1;
       this.src.push(randomNumber);
     }
-
     if (this.$route.query.p != undefined) {
       this.search();
     }
@@ -476,18 +480,23 @@ export default {
 
       const geocoder = new kakao.maps.services.Geocoder();
 
+      this.arr = [];
+      this.list = [];
+      this.minGym = [];
+      this.gymProgress = 0;
+      let list = this.list;
+      let arr = this.arr;
       let _this = this;
-      let arr = new Array();
       let min = 1;
-      let list = new Array();
 
       http.get("/gym/" + dong).then(({ data }) => {
         console.log("axio 데이터", data);
         console.log("데이터 갯수" + data.length);
-
+        _this.gymComplete = data.length;
         for (let i = 0; i < data.length; i++) {
           geocoder.addressSearch(data[i].sjibun, function (result, status) {
             // 정상적으로 검색이 완료됐으면
+            _this.gymProgress++;
             if (status === kakao.maps.services.Status.OK) {
               let coords = new kakao.maps.LatLng(result[0].y, result[0].x);
               arr.push({
@@ -530,12 +539,8 @@ export default {
               }
             }
           });
-        }
-        let allList = { arr, minGym: _this.minGym, list };
-
-        this.$store.dispatch("getGymList", allList);
-        // this.$store.dispatch("NearGym", _this.minGym);
-        // this.$store.dispatch("NearGymList", list);
+        } // end for
+        _this.allList = { arr, minGym: _this.minGym, list };
       });
     },
   },
@@ -543,6 +548,19 @@ export default {
     setDealAmount: function (value) {
       value.replace(/,/g, ""); //콤마제거후
       // if(value.)
+    },
+  },
+  watch: {
+    gymProgress() {
+      if (this.gymComplete == this.gymProgress) {
+        console.log("before", this.allList);
+
+        this.$store.dispatch("getGymList", {
+          list: this.list,
+          arr: this.arr,
+          minGym: this.minGym,
+        });
+      }
     },
   },
 };

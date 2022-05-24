@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div class="title">
+      <div>
+        <b-icon icon="megaphone" />
+      </div>
+      <h2>거래량 TOP TEN</h2>
+    </div>
+    <p class="ml-4">2022년 4월에 거래가 가장 많이 된 지역 10개입니다.</p>
     <Bar
       :chart-options="chartOptions"
       :chart-data="chartData"
@@ -78,9 +85,25 @@ export default {
         labels: [],
         datasets: [
           {
-            label: "Data One",
-            backgroundColor: "#f87979",
-            data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11],
+            label: "2022년 4월",
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+              "rgba(255, 206, 86, 0.2)",
+              "rgba(75, 192, 192, 0.2)",
+              "rgba(153, 102, 255, 0.2)",
+              "rgba(255, 159, 64, 0.2)",
+            ],
+            borderColor: [
+              "rgba(255,99,132,1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+              "rgba(153, 102, 255, 1)",
+              "rgba(255, 159, 64, 1)",
+            ],
+            borderWidth: 1,
+            data: [],
           },
         ],
       },
@@ -93,12 +116,42 @@ export default {
   created() {
     http.get("/housedeal/deal10").then(({ data }) => {
       console.log(data);
-      console.log(data.sidoName);
+      data.forEach((item) => {
+        this.chartData.labels.push(
+          item.sidoName + " " + item.gugunName + " " + item.dongName
+        );
+        console.log(this.chartData.datasets);
 
-      this.chartData.labels.push(data.sidoName);
+        this.chartData.datasets[0].data.push(item.count);
+      });
     });
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+/* 타이틀 */
+.title {
+  display: flex;
+  line-height: 33px;
+  margin-bottom: 14px;
+}
+.title div {
+  width: 30px;
+  height: 30px;
+  background-color: #0ca66d;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.title div .b-icon {
+  margin: auto;
+  height: 100%;
+  display: block;
+  font-size: 20px;
+  color: #fff;
+}
+.title h2 {
+  color: #555;
+  font-size: 24px;
+}
+</style>
