@@ -2,22 +2,35 @@
   <div>
     <b-card class="mb-5 shadow p-4">
       <b-row>
+        <b-card-title>
+          <p>{{ aptDetail[0].apartmentName }}</p>
+        </b-card-title>
+        <b-card-sub-title> </b-card-sub-title>
+        <div class="mb-3">
+          <b-button
+            class="set_button"
+            style="background-color: transparent; border: none"
+            ><b-icon
+              icon="exclamation-circle-fill"
+              variant="success"
+              v-b-toggle.my-collapse
+            ></b-icon
+          ></b-button>
+        </div>
+      </b-row>
+      <b-row>
         <b-col>
-          <b-card-title>
-            <p>{{ aptDetail[0].apartmentName }}</p>
-            <div class="img_box">
-              <img src="@/assets/aptimg/apt1.jpg" alt="img" />
-            </div>
-          </b-card-title>
-          <b-card-sub-title> </b-card-sub-title>
+          <div class="img_box">
+            <img src="@/assets/aptimg/apt1.jpg" alt="img" />
+          </div>
           <b-card-text>{{ aptDetail[0].buildYear }}</b-card-text>
         </b-col>
         <b-col>
           <table>
             <tr>
               <th>거래일</th>
-              <th>거래가격</th>
-              <th>면적</th>
+              <th>거래가격(만원)</th>
+              <th>면적(m²)</th>
               <th>층</th>
             </tr>
             <tr v-for="(item, index) in aptDetail" :key="index">
@@ -25,20 +38,8 @@
                 {{ item.dealYear }}.{{ item.dealMonth }}.{{ item.dealDay }}
               </td>
               <td>{{ item.dealAmount }}</td>
-              <td>{{ item.area }}</td>
-              <td>{{ item.floor }}</td>
-            </tr>
-          </table>
-        </b-col>
-        <b-col>
-          <table>
-            <tr>
-              <th>공원</th>
-            </tr>
-            <tr v-for="(item, index) in parks" :key="index">
-              <td>
-                {{ item.pname }}
-              </td>
+              <td>{{ item.area }}m²</td>
+              <td>{{ item.floor }}층</td>
             </tr>
           </table>
         </b-col>
@@ -46,7 +47,22 @@
       <b-row>
         <b-col> {{ stationName }}역 &nbsp; 거리 : {{ stationDistance }} </b-col>
       </b-row>
-      <b-button href="#" variant="primary">Go somewhere</b-button>
+      <b-row>
+        <table>
+          <tr>
+            <th>공원</th>
+          </tr>
+          <tr v-for="(item, index) in parks" :key="index">
+            <td>
+              {{ item.pname }}
+            </td>
+          </tr>
+        </table>
+      </b-row>
+
+      <b-collapse id="my-collapse">
+        <b-card title="Collapsible card"> <div id="mapDetail"></div> </b-card>
+      </b-collapse>
     </b-card>
     <div style="display: none">
       {{ parklist }}
@@ -68,17 +84,22 @@ export default {
       stationDistance: 0,
       air: [],
       parks: [],
+      mapDetail: null,
     };
   },
   mounted() {
-    //스크립트 객체 생성
-    const script = document.createElement("script");
-    /* global kakao */
-    script.onload = () => kakao.maps.load();
-    //카카오 지도 api
-    script.src =
-      "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=40868a23b3a27c7fee40b3f1358636ca&libraries=services";
-    document.head.appendChild(script);
+    if (window.kakao && window.kakao.maps) {
+      this.initMap();
+    } else {
+      //스크립트 객체 생성
+      const script = document.createElement("script");
+      /* global kakao */
+      script.onload = () => kakao.maps.load(this.initMap);
+      //카카오 지도 api
+      script.src =
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=40868a23b3a27c7fee40b3f1358636ca&libraries=services";
+      document.head.appendChild(script);
+    }
   },
   computed: {
     aptDetail() {
@@ -172,11 +193,46 @@ export default {
       });
       this.stationDistance = min;
     },
+    // 카카오 지도 맵 생성
+    initMap() {
+      console.log("initmap");
+
+      const mapContainer = document.getElementById("mapDetail"); // 지도를 표시할 div
+      const mapOption = {
+        center: new kakao.maps.LatLng(
+          this.aptDetail[0].lat,
+          this.aptDetail[0].lng
+        ), // 지도의 중심좌표
+        level: 5, // 지도의 확대 레벨
+      };
+      this.mapDetail = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+    },
+    aptMarkers() {
+      // 마커가 표시될 위치입니다
+      var markerPosition = new kakao.maps.LatLng(
+        this.aptDetail[0].lat,
+        this.aptDetail[0].lng
+      );
+
+      // 마커를 생성합니다
+      var marker = new kakao.maps.Marker({
+        position: markerPosition,
+      });
+
+      // 마커가 지도 위에 표시되도록 설정합니다
+      marker.setMap(this.mapDetail);
+    },
   },
 };
 </script>
 
 <style scoped>
+#mapDetail {
+  width: 100%;
+  height: 600px;
+  position: relative;
+}
+
 .card {
   border-radius: 20px;
 }
