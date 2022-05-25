@@ -1,24 +1,33 @@
 <template>
   <div>
     <b-card class="mb-5 shadow p-4">
-      <b-row>
-        <b-card-title>
-          <p>{{ aptDetail[0].apartmentName }}</p>
-        </b-card-title>
-        <b-card-sub-title> </b-card-sub-title>
-        <div class="mb-3">
-          <b-button
-            class="set_button"
-            style="background-color: transparent; border: none"
-            ><b-icon
-              icon="exclamation-circle-fill"
-              variant="info"
-              scale="1"
-              v-b-toggle.my-collapse2
-            ></b-icon
-          ></b-button>
-        </div>
-      </b-row>
+      <b-card-title class="row">
+        <b-col cols="4" style="display: inline-block">
+          <p style="display: inline-block">{{ aptDetail[0].apartmentName }}</p>
+          <div class="mb-3" style="display: inline-block">
+            <b-button
+              class="set_button"
+              style="background-color: transparent; border: none"
+              ><b-icon
+                icon="exclamation-circle-fill"
+                variant="info"
+                scale="1"
+                v-b-toggle.my-collapse2
+              ></b-icon
+            ></b-button>
+          </div>
+        </b-col>
+        <b-col cols="4"></b-col>
+        <b-col cols="3">
+          <b-form-rating
+            id="rating-readonly"
+            :value="health"
+            readonly
+            show-value
+          ></b-form-rating>
+        </b-col>
+      </b-card-title>
+
       <b-row class="text-center mb-3">
         <b-col>
           <div class="img_box">
@@ -86,8 +95,8 @@
                     헬스장 : {{ neargym.sname }} &nbsp; 거리 :
                     {{ neargym.sdistance | gymnumberFormat }}m (
                   </div>
-                  <div v-if="neargym.sdistance < 0.05">약 5분 소요)</div>
-                  <div v-else-if="neargym.sdistance < 0.1">약 10분 소요)</div>
+                  <div v-if="neargym.sdistance < 0.3">약 3분 소요)</div>
+                  <div v-else-if="neargym.sdistance < 0.5">약 5분 소요)</div>
                   <div v-else>약 15분 소요)</div>
                 </template>
               </b-row>
@@ -97,12 +106,16 @@
                 <h3>공원 정보</h3>
               </b-row>
               <b-row align-h="start">
-                <div v-for="(item, index) in parks" :key="index">
-                  <span v-if="index + 1 == parks.length">
-                    {{ item.pname }}
-                  </span>
-                  <span v-else> {{ item.pname }}, </span>
-                </div>
+                <template v-if="parkDistance < 1000">
+                  <div>
+                    {{ nearPark.pname }}역 &nbsp; 거리 :
+                    {{ parkDistance | numberFormat }}m (
+                  </div>
+                  <div v-if="parkDistance < 500">약 5분 소요)</div>
+                  <div v-else-if="parkDistance < 1000">약 10분 소요)</div>
+                  <div v-else>약 15분 소요)</div>
+                </template>
+                <div v-else>공원 정보를 업데이트 중입니다.</div>
               </b-row>
               <br />
               <br />
@@ -118,6 +131,7 @@
       </b-collapse>
     </b-card>
     <div style="display: none">
+      {{ score }}
       {{ parklist }}
     </div>
   </div>
@@ -138,6 +152,9 @@ export default {
       air: [],
       parks: [],
       mapDetail: null,
+      parkDistance: 0,
+      nearPark: [],
+      health: "",
     };
   },
   components: {
@@ -178,8 +195,56 @@ export default {
       this.getpark();
       return 0;
     },
+    score() {
+      this.calScore();
+      return this.health;
+    },
   },
   methods: {
+    calScore() {
+      let result = 0;
+
+      let mise = this.$store.state.dustRank;
+      if (mise <= 5) {
+        result += 100;
+      } else if (mise <= 10) {
+        result += 80;
+      } else if (mise <= 15) {
+        result += 60;
+      } else if (mise <= 20) {
+        result += 40;
+      } else {
+        result += 20;
+      }
+
+      let gym = this.neargym.sdistance;
+      if (gym <= 0.1) {
+        result += 100;
+      } else if (gym <= 0.2) {
+        result += 80;
+      } else if (gym <= 0.3) {
+        result += 60;
+      } else if (gym <= 0.4) {
+        result += 40;
+      } else if (gym <= 0.5) {
+        result += 20;
+      }
+
+      let park = this.parkDistance;
+      console.log("parkd", park);
+      if (park <= 200) {
+        result += 100;
+      } else if (park <= 400) {
+        result += 80;
+      } else if (park <= 600) {
+        result += 60;
+      } else if (park <= 800) {
+        result += 40;
+      } else if (park <= 1000) {
+        result += 20;
+      }
+      this.health = (result + 200) / 100;
+    },
     //좌표 계산 함수
     getDistanceFromLatLonInKm(lat1, lng1, lat2, lng2) {
       function deg2rad(deg) {
@@ -211,9 +276,30 @@ export default {
             this.aptDetail[0].lng
         )
         .then(({ data }) => {
-          console.log(data);
+          // console.log("park", data);
+
+          let min = 1;
 
           this.parks = data;
+          this.parks.forEach((item) => {
+            if (
+              this.getDistanceFromLatLonInKm(
+                this.apt[0].lat,
+                this.apt[0].lng,
+                item.plat,
+                item.plng
+              ) < min
+            ) {
+              min = this.getDistanceFromLatLonInKm(
+                this.apt[0].lat,
+                this.apt[0].lng,
+                item.plat,
+                item.plng
+              );
+              this.nearPark = item;
+            }
+          });
+          this.parkDistance = min * 1000;
         });
     },
     subway() {

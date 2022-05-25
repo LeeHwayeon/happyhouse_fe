@@ -444,6 +444,8 @@ export default {
       const arr = document.getElementsByClassName("window");
 
       for (let i = 0; i < arr.length; i++) {
+        console.log("remove?");
+
         arr[i].remove();
       }
 
@@ -587,6 +589,8 @@ export default {
     },
     //미세먼지 정보 가져오는 함수
     getDust() {
+      console.log("??");
+
       http.get("/air/" + this.selectedGu).then((resp) => {
         this.$store.dispatch("getDust", resp.data);
       });

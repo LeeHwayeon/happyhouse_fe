@@ -1,5 +1,6 @@
 <template>
   <div>
+    <p>서울시 내 25개 구 중 {{ gu }}의 순위는 {{ dustRank }}등 입니다.</p>
     <LineChartGenerator
       :chart-options="chartOptions"
       :chart-data="chartData"
@@ -104,6 +105,8 @@ export default {
           ],
         },
       },
+      dustRank: [],
+      gu: "",
     };
   },
   created() {},
@@ -118,6 +121,9 @@ export default {
       //미세먼지
       const arr = this.$store.state.dustList;
       this.chartData.datasets[0].data = arr;
+
+      this.dustRank = this.$store.state.dustRank + 1;
+      this.gu = this.$store.state.dustGuName;
     },
   },
 };

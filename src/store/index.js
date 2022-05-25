@@ -19,6 +19,7 @@ export default new Vuex.Store({
     neargymList: [],
     dustList: [],
     dustRank: "",
+    dustGuName: "",
   },
   getters: {},
   mutations: {
@@ -50,6 +51,7 @@ export default new Vuex.Store({
     },
     GET_DUST(state, payload) {
       state.dustList = [];
+      state.dustGuName = payload.results[0].agugunName;
       payload.results.forEach((item) => {
         state.dustList.push(item.adust);
       });
