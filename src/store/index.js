@@ -57,6 +57,11 @@ export default new Vuex.Store({
       });
       state.dustRank = payload.rank;
     },
+    INIT_DATA(state) {
+      state.neargymList = [];
+      state.neargym = [];
+      state.gymList = [];
+    },
   },
   actions: {
     getSido({ commit }) {
@@ -98,6 +103,9 @@ export default new Vuex.Store({
     },
     getDust({ commit }, data) {
       commit("GET_DUST", data);
+    },
+    initData({ commit }) {
+      commit("INIT_DATA");
     },
   },
   modules: {

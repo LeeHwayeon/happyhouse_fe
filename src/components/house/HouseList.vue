@@ -56,11 +56,18 @@
       <div class="set_list" style="background-color: transparent">
         <b-button
           class="set_button"
-          style="background-color: transparent; border: none"
-          ><b-icon
+          style="
+            background-color: #fff;
+            border: none;
+            color: #28a744;
+            font-weight: 600;
+          "
+          v-b-toggle.my-collapse
+          >필터
+          <b-icon
             icon="exclamation-circle-fill"
             variant="success"
-            v-b-toggle.my-collapse
+            style="z-index: 10"
           ></b-icon
         ></b-button>
 
@@ -491,7 +498,7 @@ export default {
     },
     displayMarkers() {
       const imageSrc = require("@/assets/building.png"); //마커 이미지
-      const imageSize = new kakao.maps.Size(43, 43); //마커 이미지 사이즈
+      const imageSize = new kakao.maps.Size(45, 45); //마커 이미지 사이즈
       const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); //마커 이미지 생성
 
       this.aptLists.forEach((item) => {
@@ -507,7 +514,7 @@ export default {
         let max = Math.round((item.max / 10000) * 100, 2) / 100 + "억";
         var customOverlay = new kakao.maps.CustomOverlay({
           position: new kakao.maps.LatLng(item.lat, item.lng),
-          content: `<div class="window" style="background: #fc5f67;border-radius: 10px;font-weight: 500;color: #fff;padding: 5px 5px 3px 5px;font-size:13px"><span style="font-weight: 700;font-size:15px">${min}</span><br/>~${max}</div>`,
+          content: `<div class="window" style="background: #fc5f67;border-radius: 10px;font-weight: 500;color: #fff;padding: 5px 5px 3px 5px;font-size:13px;"><span style="font-weight: 700;font-size:15px">${min}</span><br/>~${max}</div>`,
           xAnchor: 0.5,
           yAnchor: 2.1,
         });
@@ -522,6 +529,7 @@ export default {
       this.map.setCenter(new kakao.maps.LatLng(position.lat, position.lng));
     },
     clickDetail(aptCode, dong) {
+      this.$store.dispatch("initData");
       this.$store.dispatch("getHouseDetail", aptCode);
 
       const geocoder = new kakao.maps.services.Geocoder();
@@ -568,6 +576,8 @@ export default {
                   _this.aptDetail[0].lng
                 );
                 _this.minGym = data[i];
+                _this.minGym.slat = coords.Ma;
+                _this.minGym.slng = coords.La;
                 _this.minGym.sdistance = min;
               }
 
@@ -666,7 +676,10 @@ export default {
   margin-left: -17px;
   margin-bottom: -17px;
 }
-
+.set_button {
+  border-radius: 70px;
+  border: 1px solid #28a744;
+}
 /* search List */
 .search_content {
   position: relative;

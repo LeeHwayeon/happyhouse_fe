@@ -4,26 +4,22 @@
       <b-card-title class="row">
         <b-col cols="4" style="display: inline-block">
           <p style="display: inline-block">{{ aptDetail[0].apartmentName }}</p>
-          <div class="mb-3" style="display: inline-block">
-            <b-button
-              class="set_button"
-              style="background-color: transparent; border: none"
-              ><b-icon
-                icon="exclamation-circle-fill"
-                variant="info"
-                scale="1"
-                v-b-toggle.my-collapse2
-              ></b-icon
-            ></b-button>
-          </div>
         </b-col>
-        <b-col cols="4"></b-col>
-        <b-col cols="3">
+        <b-col cols="3"> </b-col>
+        <b-col cols="1" style="padding: 0">
+          <img
+            src="@/assets/planet-earth.png"
+            alt="eco"
+            class="eco-img"
+          />건강지수
+        </b-col>
+        <b-col cols="4">
           <b-form-rating
             id="rating-readonly"
             :value="health"
             readonly
             show-value
+            variant="success"
           ></b-form-rating>
         </b-col>
       </b-card-title>
@@ -61,78 +57,77 @@
         </b-col>
       </b-row>
 
-      <b-collapse id="my-collapse2">
-        <b-card title="상세보기">
-          <b-row>
-            <b-col sm="7" ro><div id="mapDetail"></div> </b-col>
-            <b-col sm="5">
-              <b-row align-h="start">
-                <h3>지하철 정보</h3>
-              </b-row>
-              <b-row align-h="start">
-                <template v-if="stationDistance < 2000">
-                  <div>
-                    {{ stationName }}역 &nbsp; 거리 :
-                    {{ stationDistance | numberFormat }}m (
-                  </div>
-                  <div v-if="stationDistance < 500">약 5분 소요)</div>
-                  <div v-else-if="stationDistance < 1000">약 10분 소요)</div>
-                  <div v-else>약 15분 소요)</div>
-                </template>
-                <div v-else>지하철 정보를 업데이트 중입니다.</div>
-              </b-row>
-              <br />
-              <br />
-              <b-row align-h="start">
-                <h3>헬스장 정보</h3>
-              </b-row>
-              <b-row align-h="start">
-                <template v-if="neargym.length == 0">
-                  <div>1km 이내에 헬스장 정보가 없습니다.</div>
-                </template>
-                <template v-else>
-                  <div>
-                    헬스장 : {{ neargym.sname }} &nbsp; 거리 :
-                    {{ neargym.sdistance | gymnumberFormat }}m (
-                  </div>
-                  <div v-if="neargym.sdistance < 0.3">약 3분 소요)</div>
-                  <div v-else-if="neargym.sdistance < 0.5">약 5분 소요)</div>
-                  <div v-else>약 15분 소요)</div>
-                </template>
-              </b-row>
-              <br />
-              <br />
-              <b-row align-h="start">
-                <h3>공원 정보</h3>
-              </b-row>
-              <b-row align-h="start">
-                <template v-if="parkDistance < 1000">
-                  <div>
-                    {{ nearPark.pname }}역 &nbsp; 거리 :
-                    {{ parkDistance | numberFormat }}m (
-                  </div>
-                  <div v-if="parkDistance < 500">약 5분 소요)</div>
-                  <div v-else-if="parkDistance < 1000">약 10분 소요)</div>
-                  <div v-else>약 15분 소요)</div>
-                </template>
-                <div v-else>공원 정보를 업데이트 중입니다.</div>
-              </b-row>
-              <br />
-              <br />
-              <b-row>
-                <h3>미세먼지 정보</h3>
-              </b-row>
-              <b-row>
-                <b-col><dust-chart /></b-col>
-              </b-row>
-            </b-col>
-          </b-row>
-        </b-card>
-      </b-collapse>
+      <b-card>
+        <b-row>
+          <b-col sm="7"><div id="mapDetail"></div></b-col>
+          <b-col sm="5">
+            <b-row align-h="start">
+              <h3>지하철 정보</h3>
+            </b-row>
+            <b-row align-h="start">
+              <template v-if="stationDistance < 2000">
+                <div>
+                  {{ stationName }}역 &nbsp; 거리 :
+                  {{ stationDistance | numberFormat }}m (
+                </div>
+                <div v-if="stationDistance < 500">약 5분 소요)</div>
+                <div v-else-if="stationDistance < 1000">약 10분 소요)</div>
+                <div v-else>약 15분 소요)</div>
+              </template>
+              <div v-else>지하철 정보를 업데이트 중입니다.</div>
+            </b-row>
+            <br />
+            <br />
+            <b-row align-h="start">
+              <h3>헬스장 정보</h3>
+            </b-row>
+            <b-row align-h="start">
+              <template v-if="neargym.length == 0">
+                <div>1km 이내에 헬스장 정보가 없습니다.</div>
+              </template>
+              <template v-else>
+                <div>
+                  헬스장 : {{ neargym.sname }} &nbsp; 거리 :
+                  {{ neargym.sdistance | gymnumberFormat }}m (
+                </div>
+                <div v-if="neargym.sdistance < 0.3">약 3분 소요)</div>
+                <div v-else-if="neargym.sdistance < 0.5">약 5분 소요)</div>
+                <div v-else>약 15분 소요)</div>
+              </template>
+            </b-row>
+            <br />
+            <br />
+            <b-row align-h="start">
+              <h3>공원 정보</h3>
+            </b-row>
+            <b-row align-h="start">
+              <template v-if="parkDistance < 1000">
+                <div>
+                  {{ nearPark.pname }}역 &nbsp; 거리 :
+                  {{ parkDistance | numberFormat }}m (
+                </div>
+                <div v-if="parkDistance < 500">약 5분 소요)</div>
+                <div v-else-if="parkDistance < 1000">약 10분 소요)</div>
+                <div v-else>약 15분 소요)</div>
+              </template>
+              <div v-else>공원 정보를 업데이트 중입니다.</div>
+            </b-row>
+            <br />
+            <br />
+            <b-row>
+              <h3>미세먼지 정보</h3>
+            </b-row>
+            <b-row>
+              <b-col><dust-chart /></b-col>
+            </b-row>
+          </b-col>
+        </b-row>
+      </b-card>
     </b-card>
     <div style="display: none">
       {{ score }}
       {{ parklist }}
+      <!-- {{ init }} -->
     </div>
   </div>
 </template>
@@ -163,14 +158,16 @@ export default {
   mounted() {
     if (window.kakao && window.kakao.maps) {
       this.initMap();
+      console.log("111");
     } else {
+      console.log("222");
       //스크립트 객체 생성
       const script = document.createElement("script");
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
       //카카오 지도 api
       script.src =
-        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=40868a23b3a27c7fee40b3f1358636ca&libraries=services";
+        "http://dapi.kakao.com/v2/maps/sdk.js?appkey=40868a23b3a27c7fee40b3f1358636ca";
       document.head.appendChild(script);
     }
   },
@@ -199,6 +196,10 @@ export default {
       this.calScore();
       return this.health;
     },
+    // init() {
+    //   this.initMap();
+    //   return 0;
+    // },
   },
   methods: {
     calScore() {
@@ -329,33 +330,192 @@ export default {
     },
     // 카카오 지도 맵 생성
     initMap() {
-      console.log("initmap");
+      const mapContainer1 = document.getElementById("mapDetail"); // 지도를 표시할 div
 
-      const mapContainer = document.getElementById("mapDetail"); // 지도를 표시할 div
-      const mapOption = {
+      const mapOption1 = {
         center: new kakao.maps.LatLng(
           this.aptDetail[0].lat,
           this.aptDetail[0].lng
+          // 37.5666805,
+          // 126.9784147
         ), // 지도의 중심좌표
-        level: 5, // 지도의 확대 레벨
+        level: 3, // 지도의 확대 레벨
       };
-      this.mapDetail = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      this.mapDetail = new kakao.maps.Map(mapContainer1, mapOption1); // 지도를 생성합니다
+      this.aptMarkers();
+      this.gymMarkers();
+      this.parkMarkers();
     },
     aptMarkers() {
       // 마커가 표시될 위치입니다
-      var markerPosition = new kakao.maps.LatLng(
-        this.aptDetail[0].lat,
-        this.aptDetail[0].lng
+      var markerPosition1 = new kakao.maps.LatLng(
+        this.apt[0].lat,
+        this.apt[0].lng
       );
+      const imageSrc = require("@/assets/building.png"); //마커 이미지
+      const imageSize = new kakao.maps.Size(45, 45); //마커 이미지 사이즈
+      const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); //마커 이미지 생성
 
-      // 마커를 생성합니다
-      var marker = new kakao.maps.Marker({
-        position: markerPosition,
+      //마커를 생성합니다
+      const marker = new kakao.maps.Marker({
+        map: this.mapDetail, // 마커를 표시할 지도
+        position: markerPosition1, // 마커를 표시할 위치
+        image: markerImage, // 마커 이미지
       });
 
       // 마커가 지도 위에 표시되도록 설정합니다
       marker.setMap(this.mapDetail);
+
+      // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+      var content =
+        '<div class="customoverlay" style="margin-bottom:48px;">' +
+        '  <a href="https://map.kakao.com/link/map/' +
+        this.apt[0].apartmentName +
+        "," +
+        this.apt[0].lat +
+        "," +
+        this.apt[0].lng +
+        '" target="_blank" style="background: #fc5f67;border-radius: 10px;font-weight: 500;color: #fff;padding: 5px 5px 3px 5px;font-size:13px">' +
+        '    <span class="title">' +
+        this.apt[0].apartmentName +
+        "</span>" +
+        "  </a>" +
+        "</div>";
+
+      // 커스텀 오버레이가 표시될 위치입니다
+      var position = new kakao.maps.LatLng(this.apt[0].lat, this.apt[0].lng);
+
+      // 커스텀 오버레이를 생성합니다
+      var customOverlay = new kakao.maps.CustomOverlay({
+        map: this.mapDetail,
+        position: position,
+        content: content,
+        yAnchor: 1,
+      });
+
+      customOverlay.setMap(this.mapDetail);
     },
+    gymMarkers() {
+      console.log("neargym", this.neargym);
+
+      // 마커가 표시될 위치입니다
+      var markerPosition = new kakao.maps.LatLng(
+        this.neargym.slat,
+        this.neargym.slng
+      );
+
+      const imageSrc = require("@/assets/gym.png"); //마커 이미지
+      const imageSize = new kakao.maps.Size(45, 45); //마커 이미지 사이즈
+      const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); //마커 이미지 생성
+
+      //마커를 생성합니다
+      const marker = new kakao.maps.Marker({
+        map: this.mapDetail, // 마커를 표시할 지도
+        position: markerPosition, // 마커를 표시할 위치
+        image: markerImage, // 마커 이미지
+      });
+
+      // 마커가 지도 위에 표시되도록 설정합니다
+      marker.setMap(this.mapDetail);
+
+      // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+      var content =
+        '<div class="customoverlay" style="margin-bottom:45px;">' +
+        '  <a href="https://map.kakao.com/link/map/' +
+        this.neargym.sname +
+        "," +
+        this.neargym.slat +
+        "," +
+        this.neargym.slng +
+        '" target="_blank" style="background: #fc5f67;border-radius: 10px;font-weight: 500;color: #fff;padding: 5px 5px 3px 5px;font-size:13px">' +
+        '    <span class="title">' +
+        this.neargym.sname +
+        "</span>" +
+        "  </a>" +
+        "</div>";
+
+      // 커스텀 오버레이가 표시될 위치입니다
+      var position = new kakao.maps.LatLng(
+        this.neargym.slat,
+        this.neargym.slng
+      );
+
+      // 커스텀 오버레이를 생성합니다
+      var customOverlay = new kakao.maps.CustomOverlay({
+        map: this.mapDetail,
+        position: position,
+        content: content,
+        yAnchor: 1,
+      });
+
+      customOverlay.setMap(this.mapDetail);
+    },
+    parkMarkers() {
+      // 마커가 표시될 위치입니다
+      console.log("공원 마커");
+      console.log(this.nearPark.plat);
+      console.log(this.nearPark.plng);
+      var markerPosition = new kakao.maps.LatLng(
+        this.nearPark.plat,
+        this.nearPark.plng
+      );
+      const imageSrc = require("@/assets/park.png"); //마커 이미지
+      const imageSize = new kakao.maps.Size(45, 45); //마커 이미지 사이즈
+      const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); //마커 이미지 생성
+
+      //마커를 생성합니다
+      const marker = new kakao.maps.Marker({
+        map: this.mapDetail, // 마커를 표시할 지도
+        position: markerPosition, // 마커를 표시할 위치
+        image: markerImage, // 마커 이미지
+      });
+
+      // 마커가 지도 위에 표시되도록 설정합니다
+      marker.setMap(this.mapDetail);
+
+      // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+      var content =
+        '<div class="customoverlay" style="margin-bottom:45px;">' +
+        '  <a href="https://map.kakao.com/link/map/' +
+        this.nearPark.pname +
+        "," +
+        this.nearPark.plat +
+        "," +
+        this.nearPark.plng +
+        '" target="_blank" style="background: #fc5f67;border-radius: 10px;font-weight: 500;color: #fff;padding: 5px 5px 3px 5px;font-size:13px">' +
+        '    <span class="title">' +
+        this.nearPark.pname +
+        "</span>" +
+        "  </a>" +
+        "</div>";
+
+      // 커스텀 오버레이가 표시될 위치입니다
+      var position = new kakao.maps.LatLng(
+        this.nearPark.plat,
+        this.nearPark.plng
+      );
+
+      // 커스텀 오버레이를 생성합니다
+      var customOverlay = new kakao.maps.CustomOverlay({
+        map: this.mapDetail,
+        position: position,
+        content: content,
+        yAnchor: 1,
+      });
+
+      customOverlay.setMap(this.mapDetail);
+    },
+  },
+  watch: {
+    apt() {
+      this.apt;
+    },
+  },
+  beforeUpdate() {
+    console.log("updated");
+    this.$nextTick(function () {
+      this.initMap();
+    });
   },
   filters: {
     numberFormat: (value, numFix) => {
@@ -401,7 +561,7 @@ export default {
 #mapDetail {
   width: 100%;
   height: 600px;
-  position: relative;
+  /* position: relative; */
 }
 
 .card {
@@ -428,5 +588,11 @@ table {
 }
 .img_box img {
   width: 90%;
+}
+
+.eco-img {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
 }
 </style>
