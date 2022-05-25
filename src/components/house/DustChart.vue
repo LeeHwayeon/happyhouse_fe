@@ -1,6 +1,9 @@
 <template>
   <div>
-    <p>서울시 내 25개 구 중 {{ gu }}의 순위는 {{ dustRank }}등 입니다.</p>
+    <p>
+      서울시 내 25개 구 중 {{ gu }}의 순위는
+      <strong>{{ dustRank }}등</strong> 입니다.
+    </p>
     <LineChartGenerator
       :chart-options="chartOptions"
       :chart-data="chartData"

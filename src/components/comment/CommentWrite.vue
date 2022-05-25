@@ -43,7 +43,6 @@ export default {
           icon: "success",
           title: "댓글 등록성공",
         });
-
         this.$router.go();
       });
     },

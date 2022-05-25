@@ -2,7 +2,7 @@
   <div class="bv-example-row">
     <b-row class="justify-content-md-center">
       <b-col col lg="2"></b-col>
-      <b-col cols="12" md="auto" class="m-4"> <h2>공지사항</h2></b-col>
+      <b-col cols="12" md="auto" class="m-4"> <h2>게시판</h2></b-col>
       <b-col col lg="2"></b-col>
     </b-row>
 

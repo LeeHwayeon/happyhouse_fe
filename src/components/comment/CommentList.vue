@@ -66,6 +66,10 @@ export default {
     commentmodify() {},
     commentdelete(cno) {
       http.delete("/comment/" + cno).then(() => {
+        this.$swal({
+          icon: "success",
+          title: "댓글 삭제성공",
+        });
         this.$router.go();
       });
     },

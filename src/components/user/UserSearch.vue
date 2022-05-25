@@ -59,10 +59,15 @@ export default {
   },
   methods: {
     clickok() {
+      console.log(this.uid);
+      console.log(this.uname);
+
       if (this.uid === "" || this.uname === "") {
         this.$swal({ icon: "error", title: "회원정보를 입력해주세요." });
       } else {
         http.get("/user/search/" + this.uid + "/" + this.uname).then((reps) => {
+          console.log("res", reps);
+
           if (reps.data === "SUCCESS") {
             console.log("DDD");
             http.put("/user/updatepass", this.uid).then((resp) => {

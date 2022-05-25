@@ -16,7 +16,7 @@
           <b-navbar-nav>
             <template v-if="userInfo">
               <router-link to="/house">아파트 실거래가 조회</router-link>
-              <router-link to="/notice?p=1">공지사항</router-link>
+              <router-link to="/notice?p=1">게시판</router-link>
               <router-link to="/mypage">마이페이지</router-link>
               <a href="#" @click.prevent="onClickLogout"> 로그아웃 </a>
               <p class="info_text">
