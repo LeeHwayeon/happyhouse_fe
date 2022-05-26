@@ -94,13 +94,14 @@ export default {
     },
     userDelete() {
       this.$swal({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        title: "정말 탈퇴하시겠습니까?",
+        text: "더이상 Happy house의 기능을 이용할 수 없습니다.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "취소",
+        confirmButtonText: "탈퇴",
       }).then((result) => {
         if (result.isConfirmed) {
           http.delete("/user/delete/" + this.userInfo.uid).then(() => {
@@ -108,7 +109,7 @@ export default {
             this.SET_USER_INFO(null);
             sessionStorage.removeItem("access-token");
             if (this.$route.path != "/") this.$router.push("/");
-            this.$swal("Deleted!", "Your file has been deleted.", "success");
+            this.$swal("탈퇴 성공", "success");
           });
         }
       });
